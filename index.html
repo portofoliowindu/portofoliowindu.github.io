@@ -2,31 +2,7 @@
 <html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <!-- Dynamic Viewport Scaler to force identical desktop layout rendering on mobile/tablets -->
-    <script>
-        (function() {
-            var targetWidth = 1280;
-            function updateViewport() {
-                var deviceWidth = window.innerWidth || window.screen.width;
-                var viewport = document.getElementById('dynamic-viewport');
-                if (!viewport) {
-                    viewport = document.createElement('meta');
-                    viewport.id = 'dynamic-viewport';
-                    viewport.name = 'viewport';
-                    document.head.appendChild(viewport);
-                }
-                if (deviceWidth < targetWidth) {
-                    var scale = deviceWidth / targetWidth;
-                    viewport.setAttribute('content', 'width=' + targetWidth + ', initial-scale=' + scale + ', minimum-scale=' + scale + ', maximum-scale=2.0, user-scalable=yes');
-                } else {
-                    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
-                }
-            }
-            updateViewport();
-            window.addEventListener('resize', updateViewport);
-            window.addEventListener('orientationchange', updateViewport);
-        })();
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FUDAK WINDUKO, SH., M.Pd. — Pendidik &amp; Praktisi Pendidikan</title>
     <meta name="description" content="Portofolio profesional FUDAK WINDUKO, SH., M.Pd. — Guru Kelas SD, Pengembang Media Pembelajaran Digital, dan Helpdesk AKM."/>
     
