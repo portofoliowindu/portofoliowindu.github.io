@@ -228,4 +228,100 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = mailtoUrl;
         });
     }
+
+    // 7. Visitor Counter (Harian, Bulanan, Tahunan)
+    const initVisitorCounter = () => {
+        const namespace = "portofolio_fudak_winduko";
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+
+        const dayKey = `day_${yyyy}_${mm}_${dd}`;
+        const monthKey = `month_${yyyy}_${mm}`;
+        const yearKey = `year_${yyyy}`;
+
+        // Base/offset numbers so it looks professional on first loads (set to 0 for real stats)
+        const BASE_DAILY = 0;
+        const BASE_MONTHLY = 0;
+        const BASE_YEARLY = 0;
+
+        // Check session storage to avoid double increments on page refreshes
+        const hasVisited = sessionStorage.getItem('has_visited_current_session');
+        const isLocalDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+        // Increment or just fetch
+        let endpointType = 'up'; // default: increment
+        if (hasVisited || isLocalDevelopment) {
+            endpointType = 'get'; // if already visited or local testing, just read
+        }
+
+        const fetchCount = (key, type) => {
+            const url = `https://api.counterapi.dev/v1/${namespace}/${key}/${type}`;
+            return fetch(url)
+                .then(res => {
+                    if (!res.ok) throw new Error('API response error');
+                    return res.json();
+                });
+        };
+
+        Promise.all([
+            fetchCount(dayKey, endpointType),
+            fetchCount(monthKey, endpointType),
+            fetchCount(yearKey, endpointType)
+        ])
+        .then(([dayData, monthData, yearData]) => {
+            if (endpointType === 'up') {
+                sessionStorage.setItem('has_visited_current_session', 'true');
+            }
+            
+            const dayVal = (dayData.count || 0) + BASE_DAILY;
+            const monthVal = (monthData.count || 0) + BASE_MONTHLY;
+            const yearVal = (yearData.count || 0) + BASE_YEARLY;
+
+            // Update UI with formatted numbers
+            const elDay = document.getElementById('countHarian');
+            const elMonth = document.getElementById('countBulanan');
+            const elYear = document.getElementById('countTahunan');
+
+            if (elDay) elDay.innerText = dayVal.toLocaleString('id-ID');
+            if (elMonth) elMonth.innerText = monthVal.toLocaleString('id-ID');
+            if (elYear) elYear.innerText = yearVal.toLocaleString('id-ID');
+        })
+        .catch(err => {
+            console.warn("Visitor counter API error, using static bases:", err);
+            // Fallback display
+            const elDay = document.getElementById('countHarian');
+            const elMonth = document.getElementById('countBulanan');
+            const elYear = document.getElementById('countTahunan');
+            if (elDay) elDay.innerText = BASE_DAILY.toLocaleString('id-ID');
+            if (elMonth) elMonth.innerText = BASE_MONTHLY.toLocaleString('id-ID');
+            if (elYear) elYear.innerText = BASE_YEARLY.toLocaleString('id-ID');
+        });
+    };
+
+    initVisitorCounter();
+
+    // 8. Back to Top Button
+    const backToTopBtn = document.getElementById('backToTopBtn');
+    if (backToTopBtn) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                // Show button
+                backToTopBtn.classList.remove('translate-y-20', 'opacity-0');
+                backToTopBtn.classList.add('translate-y-0', 'opacity-100');
+            } else {
+                // Hide button
+                backToTopBtn.classList.remove('translate-y-0', 'opacity-100');
+                backToTopBtn.classList.add('translate-y-20', 'opacity-0');
+            }
+        });
+
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
 });

@@ -41,6 +41,23 @@
 </head>
 <body class="bg-bgDark text-textSand antialiased overflow-x-hidden scrollbar-thin">
 
+    <!-- ===================== FLOATING BACKGROUND SHAPES ===================== -->
+    <div class="floating-shapes-container">
+        <div class="shape circle" style="width: 80px; height: 80px; left: 10%; animation-delay: 0s; animation-duration: 22s;"></div>
+        <div class="shape square" style="width: 60px; height: 60px; left: 25%; animation-delay: 4s; animation-duration: 28s;"></div>
+        <div class="shape triangle" style="left: 40%; animation-delay: 2s; animation-duration: 25s;"></div>
+        <div class="shape circle" style="width: 40px; height: 40px; left: 55%; animation-delay: 8s; animation-duration: 18s;"></div>
+        <div class="shape rectangle" style="left: 70%; animation-delay: 5s; animation-duration: 32s;"></div>
+        <div class="shape square" style="width: 70px; height: 70px; left: 85%; animation-delay: 1s; animation-duration: 22s;"></div>
+        
+        <div class="shape circle" style="width: 50px; height: 50px; left: 15%; animation-delay: 10s; animation-duration: 26s;"></div>
+        <div class="shape triangle" style="left: 32%; animation-delay: 12s; animation-duration: 21s;"></div>
+        <div class="shape square" style="width: 50px; height: 50px; left: 48%; animation-delay: 6s; animation-duration: 27s;"></div>
+        <div class="shape circle" style="width: 90px; height: 90px; left: 63%; animation-delay: 14s; animation-duration: 24s;"></div>
+        <div class="shape rectangle" style="left: 78%; animation-delay: 9s; animation-duration: 30s;"></div>
+        <div class="shape triangle" style="left: 92%; animation-delay: 3s; animation-duration: 19s;"></div>
+    </div>
+
     <!-- ===================== PRELOADER ===================== -->
     <div class="preloader">
         <div class="texts-container flex items-center justify-center gap-3 text-lg sm:text-2xl font-extrabold text-textSand opacity-0">
@@ -624,11 +641,36 @@
 
     <!-- ===================== FOOTER ===================== -->
     <footer class="border-t border-textSand/10 py-8 bg-bgDark">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white font-bold text-xs font-syne">FW</div>
                 <p class="text-textSand/50 text-sm">© 2026 <span class="font-semibold text-textSand/70">FUDAK WINDUKO, SH., M.Pd.</span> Hak Cipta Dilindungi.</p>
             </div>
+            
+            <!-- Visitor Counter -->
+            <div class="flex items-center gap-6 py-2 px-4 rounded-xl bg-white/[0.02] border border-textSand/5 text-xs font-medium text-textSand/65 shadow-inner">
+                <div class="flex items-center gap-2">
+                    <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>Kunjungan:</span>
+                </div>
+                <div class="flex gap-4">
+                    <div class="text-center">
+                        <span class="block font-bold text-accentGreen" id="countHarian">0</span>
+                        <span class="text-[9px] uppercase tracking-wider text-textSand/40">Hari Ini</span>
+                    </div>
+                    <span class="text-textSand/10">|</span>
+                    <div class="text-center">
+                        <span class="block font-bold text-accentGreen" id="countBulanan">0</span>
+                        <span class="text-[9px] uppercase tracking-wider text-textSand/40">Bulan Ini</span>
+                    </div>
+                    <span class="text-textSand/10">|</span>
+                    <div class="text-center">
+                        <span class="block font-bold text-accentGreen" id="countTahunan">0</span>
+                        <span class="text-[9px] uppercase tracking-wider text-textSand/40">Tahun Ini</span>
+                    </div>
+                </div>
+            </div>
+
             <div class="flex gap-4 text-sm font-medium text-textSand/50">
                 <a href="#home"       class="hover:text-accentGreen transition-colors">Beranda</a>
                 <span>·</span>
@@ -638,6 +680,11 @@
             </div>
         </div>
     </footer>
+
+    <!-- Back to Top Button -->
+    <button id="backToTopBtn" class="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-accentGreen text-bgDark flex items-center justify-center shadow-lg transition-all duration-300 transform translate-y-20 opacity-0 hover:bg-emerald-600 hover:text-white hover:-translate-y-1 hover:shadow-2xl active:scale-95" title="Kembali ke atas">
+        <i class="fas fa-chevron-up text-lg"></i>
+    </button>
 
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>

@@ -219,3 +219,103 @@ html, body {
         font-size: clamp(48px, 12vw, 80px);
     }
 }
+
+/* ==========================================================================
+   Background Shapes & Card Shine Hover Effect
+   ========================================================================== */
+
+/* Floating Geometric Shapes Container */
+.floating-shapes-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+}
+
+@keyframes floatUpShape {
+    0% {
+        transform: translateY(110vh) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.22;
+    }
+    90% {
+        opacity: 0.22;
+    }
+    100% {
+        transform: translateY(-20vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.shape {
+    position: absolute;
+    bottom: -150px;
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.22); /* Grayish/Off-white border */
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.18)); /* Glowing aura effect */
+    pointer-events: none;
+    animation: floatUpShape 25s linear infinite;
+    opacity: 0;
+}
+
+.shape.circle {
+    border-radius: 50%;
+}
+
+.shape.square {
+    border-radius: 8px;
+}
+
+.shape.triangle {
+    border: none;
+    background-color: rgba(255, 255, 255, 0.08); /* Off-white fill */
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    width: 60px;
+    height: 52px;
+}
+
+.shape.rectangle {
+    border-radius: 6px;
+    width: 40px;
+    height: 70px;
+}
+
+/* Card Shine Effects */
+.competency-card, .portfolio-item {
+    position: relative;
+    overflow: hidden;
+}
+
+.competency-card::after, .portfolio-item::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -100%;
+    width: 50%;
+    height: 200%;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.15) 30%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0.15) 70%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(25deg);
+    pointer-events: none;
+    transition: none;
+    opacity: 0;
+    z-index: 10;
+}
+
+.competency-card:hover::after, .portfolio-item:hover::after {
+    left: 150%;
+    opacity: 1;
+    transition: left 0.8s ease-in-out, opacity 0.8s ease-in-out;
+}
