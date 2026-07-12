@@ -88,36 +88,94 @@ document.addEventListener('DOMContentLoaded', () => {
         observer.observe(counterSection);
     }
 
-    // 4. Portfolio Filter
+    // 4. Portfolio Filter with "Show More" Limit
     const filterBtns = document.querySelectorAll('.filter-btn');
     const portfolioItems = document.querySelectorAll('.portfolio-item');
+    const showMoreBtn = document.getElementById('portfolioShowMoreBtn');
+    const showMoreText = document.getElementById('portfolioShowMoreText');
+    const showMoreIcon = document.getElementById('portfolioShowMoreIcon');
+    const showMoreContainer = document.getElementById('portfolioShowMoreContainer');
 
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            // Remove active classes
-            filterBtns.forEach(b => b.classList.remove('active'));
-            // Add active class to clicked button
-            btn.classList.add('active');
+    const INITIAL_LIMIT = 6;
+    let showAll = false;
+    let currentFilter = 'all';
 
-            const filter = btn.getAttribute('data-filter');
+    const updatePortfolio = () => {
+        let visibleCount = 0;
+        let matchingCount = 0;
 
-            portfolioItems.forEach(item => {
-                if (filter === 'all' || item.classList.contains(filter)) {
+        portfolioItems.forEach(item => {
+            const matchesFilter = (currentFilter === 'all' || item.classList.contains(currentFilter));
+            
+            if (matchesFilter) {
+                matchingCount++;
+                if (showAll || visibleCount < INITIAL_LIMIT) {
+                    visibleCount++;
+                    // Show item
                     item.style.display = 'block';
                     setTimeout(() => {
                         item.style.opacity = '1';
                         item.style.transform = 'scale(1)';
                     }, 50);
                 } else {
+                    // Hide because of limit
                     item.style.opacity = '0';
                     item.style.transform = 'scale(0.9)';
                     setTimeout(() => {
                         item.style.display = 'none';
                     }, 300);
                 }
-            });
+            } else {
+                // Hide because doesn't match filter
+                item.style.opacity = '0';
+                item.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    item.style.display = 'none';
+                }, 300);
+            }
+        });
+
+        // Toggle show more button visibility
+        if (showMoreContainer) {
+            if (matchingCount > INITIAL_LIMIT) {
+                showMoreContainer.style.display = 'flex';
+                // Update button text and icon orientation
+                if (showAll) {
+                    showMoreText.innerText = 'Tampilkan Lebih Sedikit';
+                    showMoreIcon.style.transform = 'rotate(180deg)';
+                } else {
+                    showMoreText.innerText = 'Tampilkan Lebih Banyak';
+                    showMoreIcon.style.transform = 'rotate(0deg)';
+                }
+            } else {
+                showMoreContainer.style.display = 'none';
+            }
+        }
+    };
+
+    // Filter Buttons Click Listener
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            currentFilter = btn.getAttribute('data-filter');
+            // reset showAll to false when switching filters
+            showAll = false; 
+            updatePortfolio();
         });
     });
+
+    // Show More Button Click Listener
+    if (showMoreBtn) {
+        showMoreBtn.addEventListener('click', () => {
+            showAll = !showAll;
+            updatePortfolio();
+        });
+    }
+
+    // Run once on load
+    updatePortfolio();
 
     // 5. GSAP Floating Animation (Safe Check)
     if (typeof gsap !== 'undefined') {
