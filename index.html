@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <!-- Dynamic Viewport Scaler to force identical desktop layout rendering on mobile/tablets -->
+    <script>
+        (function() {
+            var targetWidth = 1280;
+            function updateViewport() {
+                var deviceWidth = window.innerWidth || window.screen.width;
+                var viewport = document.getElementById('dynamic-viewport');
+                if (!viewport) {
+                    viewport = document.createElement('meta');
+                    viewport.id = 'dynamic-viewport';
+                    viewport.name = 'viewport';
+                    document.head.appendChild(viewport);
+                }
+                if (deviceWidth < targetWidth) {
+                    var scale = deviceWidth / targetWidth;
+                    viewport.setAttribute('content', 'width=' + targetWidth + ', initial-scale=' + scale + ', minimum-scale=' + scale + ', maximum-scale=2.0, user-scalable=yes');
+                } else {
+                    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
+                }
+            }
+            updateViewport();
+            window.addEventListener('resize', updateViewport);
+            window.addEventListener('orientationchange', updateViewport);
+        })();
+    </script>
+    <title>FUDAK WINDUKO, SH., M.Pd. — Pendidik &amp; Praktisi Pendidikan</title>
+    <meta name="description" content="Portofolio profesional FUDAK WINDUKO, SH., M.Pd. — Guru Kelas SD, Pengembang Media Pembelajaran Digital, dan Helpdesk AKM."/>
+    
+    <!-- Preload profile image for fast loading -->
+    <link rel="preload" href="https://images2.imgbox.com/83/45/22qlasJG_o.png" as="image">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Inter', 'sans-serif'],
+                        syne: ['Syne', 'sans-serif']
+                    },
+                    colors: {
+                        bgDark: '#0E1016',
+                        textSand: '#e4ded7',
+                        accentGreen: '#10b981',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-bgDark text-textSand antialiased overflow-x-hidden scrollbar-thin">
+
+    <!-- ===================== PRELOADER ===================== -->
+    <div class="preloader">
+        <div class="texts-container flex items-center justify-center gap-3 text-lg sm:text-2xl font-extrabold text-textSand opacity-0">
+            <span>Mendidik.</span>
+            <span>Menginspirasi.</span>
+            <span>Menggerakkan.</span>
+        </div>
+    </div>
+
+    <!-- ===================== NAVBAR ===================== -->
+    <nav class="fixed w-full z-50 glass-nav bg-bgDark/80 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white font-bold text-sm shadow-lg font-syne">FW</div>
+                    <span class="font-bold text-lg tracking-tight font-syne hidden sm:block">FUDAK WINDUKO</span>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#home"      class="hover:text-accentGreen transition-colors font-medium text-sm">Beranda</a>
+                    <a href="#about"     class="hover:text-accentGreen transition-colors font-medium text-sm">Tentang</a>
+                    <a href="#competency" class="hover:text-accentGreen transition-colors font-medium text-sm">Kompetensi</a>
+                    <a href="#portfolio" class="hover:text-accentGreen transition-colors font-medium text-sm">Karya</a>
+                    <a href="#timeline"  class="hover:text-accentGreen transition-colors font-medium text-sm">Riwayat</a>
+                    <a href="#contact"   class="hover:text-accentGreen transition-colors font-medium text-sm">Kontak</a>
+                    
+                    <a href="https://wa.me/6282142107586" target="_blank" class="rounded-md border border-textSand/30 py-2 px-4 text-xs font-semibold hover:bg-textSand hover:text-bgDark transition-all">HUBUNGI SAYA</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center gap-4">
+                    <button id="mobileMenuBtn" class="text-2xl text-textSand">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Dropdown Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-bgDark/95 border-b border-textSand/10 px-4 pt-2 pb-6 space-y-3 transition-all">
+            <a href="#home"       class="block text-sm hover:text-accentGreen py-2">Beranda</a>
+            <a href="#about"      class="block text-sm hover:text-accentGreen py-2">Tentang</a>
+            <a href="#competency" class="block text-sm hover:text-accentGreen py-2">Kompetensi</a>
+            <a href="#portfolio"  class="block text-sm hover:text-accentGreen py-2">Karya</a>
+            <a href="#timeline"   class="block text-sm hover:text-accentGreen py-2">Riwayat</a>
+            <a href="#contact"    class="block text-sm hover:text-accentGreen py-2">Kontak</a>
+            <a href="https://wa.me/6282142107586" target="_blank" class="block text-center rounded-md border border-textSand/30 py-2 px-4 text-xs font-semibold">HUBUNGI SAYA</a>
+        </div>
+    </nav>
+
+    <!-- ===================== HERO SECTION ===================== -->
+    <section id="home" class="relative min-h-screen flex flex-col justify-center pt-24 pb-16 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col items-center justify-center">
+            
+            <!-- Giant Header Text -->
+            <div class="text-center my-10 md:my-14 lg:my-16 hero-fade">
+                <h1 class="huge-text font-syne tracking-tighter text-textSand flex flex-col gap-2">
+                    <span class="block">FUDAK</span>
+                    <span class="block accent-gradient-text">WINDUKO</span>
+                </h1>
+                
+                <!-- Floating Profile Headshot -->
+                <div class="relative w-36 h-36 md:w-48 md:h-48 lg:w-56 lg:h-56 xl:w-64 xl:h-64 mx-auto -mt-12 sm:-mt-16 md:-mt-20 lg:-mt-24 z-20 grayscale-img-container shadow-2xl">
+                    <img src="https://images2.imgbox.com/83/45/22qlasJG_o.png" 
+                         alt="FUDAK WINDUKO, SH., M.Pd." 
+                         class="w-full h-full object-cover rounded-2xl border-4 border-bgDark" />
+                </div>
+            </div>
+
+            <!-- Footer Details of Hero -->
+            <div class="w-full grid md:grid-cols-2 gap-8 md:gap-16 lg:gap-24 mt-12 border-t border-textSand/10 pt-10 hero-fade">
+                <div>
+                    <p class="text-lg md:text-xl font-medium leading-relaxed text-center md:text-left">
+                        Saya saat ini mendedikasikan diri sebagai Guru Kelas SD di <a href="#timeline" class="underline underline-offset-2 hover:text-accentGreen">SDN Candimulyo 01 Kecamatan Dolopo.</a> Pendidik profesional berkompetensi hukum dan magister pendidikan.
+                    </p>
+                </div>
+                <div class="flex flex-col items-center md:items-end justify-center">
+                    <p class="text-md md:text-lg text-textSand/80 text-center md:text-right leading-relaxed max-w-[450px]">
+                        Berfokus pada pengembangan media digital pembelajaran (Articulate Storyline, HTML/JS/CSS), administrasi Dapodik, serta implementasi Kurikulum Merdeka.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Metric Counters -->
+            <div class="w-full grid grid-cols-3 gap-6 mt-12 border-t border-textSand/10 pt-10 text-center counter-section hero-fade">
+                <div>
+                    <h4 class="text-3xl md:text-5xl font-extrabold text-accentGreen counter" data-target="15">0</h4>
+                    <p class="text-xs md:text-sm text-textSand/60 mt-1 uppercase tracking-wider font-semibold">Tahun Mengajar</p>
+                </div>
+                <div>
+                    <h4 class="text-3xl md:text-5xl font-extrabold text-accentGreen counter" data-target="980">0</h4>
+                    <p class="text-xs md:text-sm text-textSand/60 mt-1 uppercase tracking-wider font-semibold">Siswa Dan Guru<br/>Dibimbing</p>
+                </div>
+                <div>
+                    <h4 class="text-3xl md:text-5xl font-extrabold text-accentGreen counter" data-target="243">0</h4>
+                    <p class="text-xs md:text-sm text-textSand/60 mt-1 uppercase tracking-wider font-semibold">Karya &amp; Publikasi</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== ABOUT SECTION ===================== -->
+    <section id="about" class="relative w-full border-t border-textSand/10 bg-bgDark py-24 md:py-36" data-aos="fade-up">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- Large Title Heading -->
+            <h2 class="mb-14 text-left font-syne text-[36px] sm:text-[45px] md:text-[60px] lg:text-[75px] font-extrabold leading-[0.9em] tracking-tighter uppercase">
+                MENDIDIK, MENGINSPIRASI, <br class="hidden md:block"/>
+                <span class="accent-gradient-text">MENGGERAKKAN.</span>
+            </h2>
+
+            <div class="grid lg:grid-cols-3 gap-16">
+                <!-- Left Side: Vision & Mission Statement -->
+                <div class="lg:col-span-2 space-y-8 text-md sm:text-lg md:text-xl font-medium leading-relaxed text-textSand/90">
+                    <p>
+                        Sebagai seorang lulusan <span class="text-accentGreen font-semibold">Sarjana Hukum (SH)</span> yang kemudian menyelesaikan studi <span class="text-accentGreen font-semibold">Magister Pendidikan (M.Pd.) Program Studi Pendidikan Luar Biasa</span>, saya memiliki pendekatan kependidikan yang unik. Saya memadukan tertib administrasi hukum dengan pedagogi khusus untuk membentuk ruang kelas sekolah dasar yang ramah anak, berkeadilan, dan inklusif.
+                    </p>
+                    <p>
+                        Visi saya adalah melahirkan generasi masa depan yang melek digital, berkarakter mulia, serta siap berdaya saing. Saya percaya bahwa seluruh anak didik—termasuk anak berkebutuhan khusus (ABK) di kelas inklusi—berhak mendapatkan kesempatan belajar berkualitas tanpa diskriminasi.
+                    </p>
+                    <p>
+                        Dalam misi harian, saya menggabungkan pembelajaran tematik dengan teknologi terkini (seperti visual dinamis dan media interaktif bikinan sendiri) guna mempermudah pemahaman konsep ajar secara kontekstual dan adaptif bagi segenap keberagaman siswa.
+                    </p>
+                </div>
+
+                <!-- Right Side: Skills & Tools lists -->
+                <div class="space-y-10 border-l border-textSand/10 pl-8 lg:pl-12">
+                    <!-- Pedagogik List -->
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-bold text-accentGreen uppercase tracking-widest font-syne">Kompetensi Pedagogik</h3>
+                        <ul class="space-y-2 text-sm text-textSand/85">
+                            <li class="flex justify-between border-b border-textSand/5 pb-2"><span>Penyusunan RPP &amp; Modul Ajar</span><span class="font-bold">95%</span></li>
+                            <li class="flex justify-between border-b border-textSand/5 pb-2"><span>Model Pembelajaran Aktif (PBL/PjBL)</span><span class="font-bold">92%</span></li>
+                            <li class="flex justify-between border-b border-textSand/5 pb-2"><span>Pendidikan Inklusif &amp; Adaptif (ABK)</span><span class="font-bold">96%</span></li>
+                            <li class="flex justify-between border-b border-textSand/5 pb-2"><span>Asesmen &amp; Evaluasi Siswa SD</span><span class="font-bold">90%</span></li>
+                        </ul>
+                    </div>
+
+                    <!-- Digital/Tools List -->
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-bold text-accentGreen uppercase tracking-widest font-syne">Profesional &amp; Digital</h3>
+                        <ul class="space-y-2 text-sm text-textSand/85">
+                            <li class="flex justify-between border-b border-textSand/5 pb-2"><span>Articulate Storyline 3</span><span class="font-bold">92%</span></li>
+                            <li class="flex justify-between border-b border-textSand/5 pb-2"><span>Web Coding (HTML, JS, CSS)</span><span class="font-bold">88%</span></li>
+                            <li class="flex justify-between border-b border-textSand/5 pb-2"><span>Kelola Dapodik &amp; Helpdesk AKM</span><span class="font-bold">95%</span></li>
+                            <li class="flex justify-between border-b border-textSand/5 pb-2"><span>Penelitian Tindakan Kelas (PTK)</span><span class="font-bold">85%</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== COMPETENCIES SECTION ===================== -->
+    <section id="competency" class="w-full py-20 border-t border-textSand/10" data-aos="fade-up">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-14">
+                <h2 class="text-xs uppercase tracking-widest text-accentGreen font-semibold mb-2">Penghargaan &amp; Pengakuan</h2>
+                <h3 class="text-3xl md:text-4xl font-bold font-syne">Sertifikasi &amp; Gelar Kompetensi</h3>
+            </div>
+
+            <!-- Colorful & Uniform Cards Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 max-w-6xl mx-auto">
+                <!-- Guru Profesional -->
+                <div class="bg-gradient-to-br from-yellow-500 to-amber-600 text-white rounded-2xl p-6 text-center shadow-lg transform hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 flex flex-col items-center justify-center min-h-[12.5rem] competency-card">
+                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-3 shadow-inner">
+                        <i class="fas fa-certificate text-white animate-pulse"></i>
+                    </div>
+                    <p class="font-bold text-sm leading-snug">Guru Profesional</p>
+                    <p class="text-[11px] text-white/90 mt-1 leading-tight">Bersertifikat Pendidik</p>
+                </div>
+
+                <!-- Guru Berprestasi -->
+                <div class="bg-gradient-to-br from-emerald-50 to-green-600 text-white rounded-2xl p-6 text-center shadow-lg transform hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 flex flex-col items-center justify-center min-h-[12.5rem] competency-card">
+                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-3 shadow-inner">
+                        <i class="fas fa-star text-white"></i>
+                    </div>
+                    <p class="font-bold text-sm leading-snug">Guru Berprestasi</p>
+                    <p class="text-[11px] text-white/90 mt-1 leading-tight">Kabupaten/Kota &amp; Provinsi</p>
+                </div>
+
+                <!-- Digitalisasi Sekolah -->
+                <div class="bg-gradient-to-br from-cyan-500 to-blue-600 text-white rounded-2xl p-6 text-center shadow-lg transform hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 flex flex-col items-center justify-center min-h-[12.5rem] competency-card">
+                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-3 shadow-inner">
+                        <i class="fas fa-laptop text-white"></i>
+                    </div>
+                    <p class="font-bold text-sm leading-snug">Digitalisasi Sekolah</p>
+                    <p class="text-[11px] text-white/90 mt-1 leading-tight">Operator &amp; Helpdesk AKM</p>
+                </div>
+
+                <!-- Guru Terinovasi -->
+                <div class="bg-gradient-to-br from-orange-400 to-red-500 text-white rounded-2xl p-6 text-center shadow-lg transform hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 flex flex-col items-center justify-center min-h-[12.5rem] competency-card">
+                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-3 shadow-inner">
+                        <i class="fas fa-lightbulb text-white"></i>
+                    </div>
+                    <p class="font-bold text-sm leading-snug">Guru Terinovasi</p>
+                    <p class="text-[11px] text-white/90 mt-1 leading-tight">Pembelajaran Kreatif</p>
+                </div>
+
+                <!-- Guru Inovatif -->
+                <div class="bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-2xl p-6 text-center shadow-lg transform hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 flex flex-col items-center justify-center min-h-[12.5rem] competency-card">
+                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-3 shadow-inner">
+                        <i class="fas fa-rocket text-white"></i>
+                    </div>
+                    <p class="font-bold text-sm leading-snug">Guru Inovatif</p>
+                    <p class="text-[11px] text-white/90 mt-1 leading-tight">Metodologi &amp; Media</p>
+                </div>
+
+                <!-- Guru Penggerak -->
+                <div class="bg-gradient-to-br from-rose-500 to-pink-600 text-white rounded-2xl p-6 text-center shadow-lg transform hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 flex flex-col items-center justify-center min-h-[12.5rem] competency-card">
+                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-3 shadow-inner">
+                        <i class="fas fa-compass text-white"></i>
+                    </div>
+                    <p class="font-bold text-sm leading-snug">Guru Penggerak</p>
+                    <p class="text-[11px] text-white/90 mt-1 leading-tight">Kemendikbudristek RI</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== PORTFOLIO SECTION ===================== -->
+    <section id="portfolio" class="w-full py-24 border-t border-textSand/10" data-aos="fade-up">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- Header Portfolio -->
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+                <div>
+                    <h2 class="text-xs uppercase tracking-widest text-accentGreen font-semibold mb-2">Karya Kreatif</h2>
+                    <h3 class="text-3xl md:text-5xl font-bold font-syne">PORTFOLIO</h3>
+                </div>
+                
+                <!-- Filter Buttons -->
+                <div class="flex flex-wrap gap-3">
+                    <button class="filter-btn active px-5 py-3 rounded-xl text-xs sm:text-sm font-semibold min-h-[3rem] md:min-h-[3.5rem] flex items-center justify-center" data-filter="all">Semua</button>
+                    <button class="filter-btn px-5 py-3 rounded-xl text-xs sm:text-sm font-semibold min-h-[3rem] md:min-h-[3.5rem] flex items-center justify-center" data-filter="modul">Modul Ajar</button>
+                    <button class="filter-btn px-5 py-3 rounded-xl text-xs sm:text-sm font-semibold min-h-[3rem] md:min-h-[3.5rem] flex items-center justify-center" data-filter="karya">Karya Ilmiah</button>
+                    <button class="filter-btn px-5 py-3 rounded-xl text-xs sm:text-sm font-semibold min-h-[3.5rem] flex items-center justify-center" data-filter="prestasi">Prestasi</button>
+                </div>
+            </div>
+
+            <!-- Portfolio Cards Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Project 1 -->
+                <div class="portfolio-item modul group relative rounded-3xl overflow-hidden shadow-xl bg-[#161a23]/60 border border-textSand/5 transition-all duration-300 flex flex-col h-full">
+                    <div class="aspect-video overflow-hidden">
+                        <img src="https://images2.imgbox.com/da/52/bLCJYHLN_o.png" 
+                             alt="Modul Ajar AI" 
+                             class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
+                    </div>
+                    <div class="p-6 flex flex-col flex-grow">
+                        <span class="text-xs font-bold text-accentGreen uppercase tracking-wider">Modul Ajar</span>
+                        <h4 class="text-xl font-bold text-textSand mt-1 mb-2 font-syne min-h-[3.5rem] flex items-center">Modul Ajar AI</h4>
+                        <p class="text-sm text-textSand/70 leading-relaxed mb-6">Panduan praktis menyusun Modul Ajar Kurikulum Merdeka menggunakan bantuan Kecerdasan Buatan (AI) secara cepat dan kreatif, dengan tetap mematuhi komponen pakem standar regulasi pendidikan.</p>
+                        <div class="flex gap-3 mt-auto">
+                            <a href="https://silebahgenerator.github.io/" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-lg bg-textSand text-bgDark hover:bg-accentGreen hover:text-white transition-colors text-xs font-semibold flex items-center gap-2"><i class="fas fa-eye"></i> Tampilkan</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="portfolio-item karya group relative rounded-3xl overflow-hidden shadow-xl bg-[#161a23]/60 border border-textSand/5 transition-all duration-300 flex flex-col h-full">
+                    <div class="aspect-video overflow-hidden">
+                        <img src="https://images2.imgbox.com/e9/fb/NflLhCiL_o.png" 
+                             alt="PTK Inklusi SD" 
+                             class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
+                    </div>
+                    <div class="p-6 flex flex-col flex-grow">
+                        <span class="text-xs font-bold text-accentGreen uppercase tracking-wider">Penelitian Inklusi</span>
+                        <h4 class="text-xl font-bold text-textSand mt-1 mb-2 font-syne min-h-[3.5rem] flex items-center">PTK Pembelajaran Inklusi SD</h4>
+                        <p class="text-sm text-textSand/70 leading-relaxed mb-6">Penelitian Tindakan Kelas (PTK) bertema penerapan strategi kolaboratif bagi anak didik berkebutuhan khusus (Slow Learner) di kelas inklusi sekolah dasar.</p>
+                        <div class="flex gap-3 mt-auto">
+                            <a href="https://rumahsilebahedu.netlify.app/" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-lg bg-textSand text-bgDark hover:bg-accentGreen hover:text-white transition-colors text-xs font-semibold flex items-center gap-2"><i class="fas fa-eye"></i> Tampilkan</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="portfolio-item prestasi group relative rounded-3xl overflow-hidden shadow-xl bg-[#161a23]/60 border border-textSand/5 transition-all duration-300 flex flex-col h-full">
+                    <div class="aspect-video overflow-hidden">
+                        <img src="https://images2.imgbox.com/1e/ed/GTTUA9DK_o.png" 
+                             alt="Pembimbing Ekstra Komputer" 
+                             class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
+                    </div>
+                    <div class="p-6 flex flex-col flex-grow">
+                        <span class="text-xs font-bold text-accentGreen uppercase tracking-wider">Prestasi Siswa</span>
+                        <h4 class="text-xl font-bold text-textSand mt-1 mb-2 font-syne min-h-[3.5rem] flex items-center">Pembimbing Ekstra Komputer</h4>
+                        <p class="text-sm text-textSand/70 leading-relaxed mb-6">Membimbing siswa dalam pengenalan dasar komputer, teknologi informasi, serta pengoperasian perangkat lunak digital guna meningkatkan literasi digital sejak dini.</p>
+                        <div class="flex gap-3 mt-auto">
+                            <a href="#" class="px-4 py-2 rounded-lg bg-textSand text-bgDark hover:bg-accentGreen hover:text-white transition-colors text-xs font-semibold flex items-center gap-2"><i class="fas fa-laptop"></i> Detail Kegiatan</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 4 -->
+                <div class="portfolio-item modul group relative rounded-3xl overflow-hidden shadow-xl bg-[#161a23]/60 border border-textSand/5 transition-all duration-300 flex flex-col h-full">
+                    <div class="aspect-video overflow-hidden">
+                        <img src="https://images2.imgbox.com/80/b3/R0Iqb826_o.png" 
+                             alt="Media Pembelajaran Interaktif" 
+                             class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
+                    </div>
+                    <div class="p-6 flex flex-col flex-grow">
+                        <span class="text-xs font-bold text-accentGreen uppercase tracking-wider">Media Pembelajaran</span>
+                        <h4 class="text-xl font-bold text-textSand mt-1 mb-2 font-syne min-h-[3.5rem] flex items-center">Media Pembelajaran Interaktif Mandiri</h4>
+                        <p class="text-sm text-textSand/70 leading-relaxed mb-6">Merancang, memprogram, dan mengembangkan media pembelajaran interaktif (HTML5/Articulate Storyline) karya sendiri untuk meningkatkan keterlibatan aktif siswa.</p>
+                        <div class="flex gap-3 mt-auto">
+                            <a href="#" class="px-4 py-2 rounded-lg bg-textSand text-bgDark hover:bg-accentGreen hover:text-white transition-colors text-xs font-semibold flex items-center gap-2"><i class="fas fa-play"></i> Buka Media</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 5 -->
+                <div class="portfolio-item karya group relative rounded-3xl overflow-hidden shadow-xl bg-[#161a23]/60 border border-textSand/5 transition-all duration-300 flex flex-col h-full">
+                    <div class="aspect-video overflow-hidden">
+                        <img src="https://images2.imgbox.com/05/32/8ZHEi7Jj_o.png" 
+                             alt="Jurnal Ilmiah" 
+                             class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
+                    </div>
+                    <div class="p-6 flex flex-col flex-grow">
+                        <span class="text-xs font-bold text-accentGreen uppercase tracking-wider">Penelitian Ilmiah</span>
+                        <h4 class="text-xl font-bold text-textSand mt-1 mb-2 font-syne min-h-[3.5rem] flex items-center">Jurnal Ilmiah Kependidikan</h4>
+                        <p class="text-sm text-textSand/70 leading-relaxed mb-6">Publikasi tulisan ilmiah bertopik manajemen pengelolaan kelas interaktif tingkat sekolah dasar pada jurnal terakreditasi.</p>
+                        <div class="flex gap-3 mt-auto">
+                            <a href="#" class="px-4 py-2 rounded-lg bg-textSand text-bgDark hover:bg-accentGreen hover:text-white transition-colors text-xs font-semibold flex items-center gap-2"><i class="fas fa-external-link-alt"></i> Buka Jurnal</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 6 -->
+                <div class="portfolio-item prestasi group relative rounded-3xl overflow-hidden shadow-xl bg-[#161a23]/60 border border-textSand/5 transition-all duration-300 flex flex-col h-full">
+                    <div class="aspect-video overflow-hidden">
+                        <img src="https://images2.imgbox.com/70/ea/EOHNIncv_o.png" 
+                             alt="Narasumber Konten Digital" 
+                             class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
+                    </div>
+                    <div class="p-6 flex flex-col flex-grow">
+                        <span class="text-xs font-bold text-accentGreen uppercase tracking-wider">Prestasi Guru</span>
+                        <h4 class="text-xl font-bold text-textSand mt-1 mb-2 font-syne min-h-[3.5rem] flex items-center">Narasumber Konten Digital</h4>
+                        <p class="text-sm text-textSand/70 leading-relaxed mb-6">Menjadi narasumber tingkat kabupaten dalam pelatihan pembuatan media pembelajaran interaktif dan pengembangan konten digital kreatif bagi pendidik.</p>
+                        <div class="flex gap-3 mt-auto">
+                            <a href="#" class="px-4 py-2 rounded-lg bg-textSand text-bgDark hover:bg-accentGreen hover:text-white transition-colors text-xs font-semibold flex items-center gap-2"><i class="fas fa-eye"></i> Tampilkan</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== EXPERIENCE / TIMELINE ===================== -->
+    <section id="timeline" class="w-full py-24 border-t border-textSand/10" data-aos="fade-up">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-20">
+                <h2 class="text-xs uppercase tracking-widest text-accentGreen font-semibold mb-2">Perjalanan Mengajar</h2>
+                <h3 class="text-3xl md:text-5xl font-bold font-syne">RIWAYAT PENGALAMAN</h3>
+            </div>
+
+            <!-- Vertical Timeline -->
+            <div class="relative border-l border-textSand/10 pl-6 md:pl-10 space-y-16">
+                
+                <!-- 1. SDN Candimulyo 01 (2026 - Sekarang) -->
+                <div class="relative">
+                    <div class="timeline-dot"></div>
+                    <span class="text-xs font-bold text-accentGreen uppercase tracking-widest bg-accentGreen/10 px-3 py-1 rounded-full">2026 – Sekarang</span>
+                    <h4 class="text-2xl font-bold text-textSand mt-4 font-syne">Guru Kelas SD</h4>
+                    <p class="text-md text-textSand/90 font-semibold mb-2">SDN Candimulyo 01 Kecamatan Dolopo (Aktif Mengajar)</p>
+                    <p class="text-sm text-textSand/75 leading-relaxed">
+                        Mendedikasikan diri penuh sebagai Guru Kelas tingkat sekolah dasar. Melaksanakan pembelajaran berbasis siswa di SDN Candimulyo 01, merancang program kelas adaptif dengan Kurikulum Merdeka, serta aktif menyuntikkan penguatan akhlak budi pekerti.
+                    </p>
+                </div>
+
+                <!-- 2. SDN Ngadirejo 03 (2021 - 2026) -->
+                <div class="relative">
+                    <div class="timeline-dot"></div>
+                    <span class="text-xs font-bold text-textSand/60 uppercase tracking-widest bg-textSand/5 px-3 py-1 rounded-full">2021 – 2026</span>
+                    <h4 class="text-2xl font-bold text-textSand mt-4 font-syne">Guru Kelas SD</h4>
+                    <p class="text-md text-textSand/90 font-semibold mb-2">SDN Ngadirejo 03 Kecamatan Wonoasri</p>
+                    <p class="text-sm text-textSand/75 leading-relaxed">
+                        Bertanggung jawab membimbing perkembangan proses belajar mengajar anak didik di SDN Ngadirejo 03. Mendesain aneka media ajar kreatif dan membina kompetensi sosial emosional siswa secara holistik.
+                    </p>
+                </div>
+
+                <!-- 3. Koordinator AKM (2021 - 2021) -->
+                <div class="relative">
+                    <div class="timeline-dot"></div>
+                    <span class="text-xs font-bold text-textSand/60 uppercase tracking-widest bg-textSand/5 px-3 py-1 rounded-full">2021 – 2021</span>
+                    <h4 class="text-2xl font-bold text-textSand mt-4 font-syne">Koordinator &amp; Helpdesk AKM</h4>
+                    <p class="text-md text-textSand/90 font-semibold mb-2">Kecamatan Mejayan (Tugas Tambahan)</p>
+                    <p class="text-sm text-textSand/75 leading-relaxed">
+                        Menjadi ujung tombak teknis dalam mengoordinasikan kesiapan Asesmen Kompetensi Minimum (AKM) di wilayah Kecamatan Mejayan. Mengawal kelancaran sistem aplikasi ujian nasional serta menjadi jembatan pemecah masalah teknis sekolah-sekolah dasar.
+                    </p>
+                </div>
+
+                <!-- 4. Guru Kelas merangkap Operator (2017 - 2021) -->
+                <div class="relative">
+                    <div class="timeline-dot"></div>
+                    <span class="text-xs font-bold text-textSand/60 uppercase tracking-widest bg-textSand/5 px-3 py-1 rounded-full">2017 – 2021</span>
+                    <h4 class="text-2xl font-bold text-textSand mt-4 font-syne">Guru Kelas Merangkap Operator Sekolah</h4>
+                    <p class="text-md text-textSand/90 font-semibold mb-2">SDN Bangunsari 01 Kecamatan Mejayan</p>
+                    <div class="flex flex-wrap gap-2 my-3">
+                        <span class="text-[10px] font-bold bg-accentGreen/10 text-accentGreen uppercase px-3 py-1 rounded-full flex items-center gap-1"><i class="fas fa-crown"></i> Ketua Operator Sekolah</span>
+                        <span class="text-[10px] font-bold bg-accentGreen/10 text-accentGreen uppercase px-3 py-1 rounded-full flex items-center gap-1"><i class="fas fa-map-marker-alt"></i> Korwil Mejayan</span>
+                    </div>
+                    <p class="text-sm text-textSand/75 leading-relaxed">
+                        Mengampu tugas ganda sebagai guru kelas dan pemegang kunci administrasi data digital di SDN Bangunsari 01. Membantu sinkronisasi Dapodik dan ditunjuk menjadi Koordinator Wilayah Mejayan bagi operator sekolah dasar sekecamatan.
+                    </p>
+                </div>
+
+                <!-- 5. Operator Sekolah (2008 - 2017) -->
+                <div class="relative">
+                    <div class="timeline-dot"></div>
+                    <span class="text-xs font-bold text-textSand/60 uppercase tracking-widest bg-textSand/5 px-3 py-1 rounded-full">2008 – 2017</span>
+                    <h4 class="text-2xl font-bold text-textSand mt-4 font-syne">Operator Sekolah</h4>
+                    <p class="text-md text-textSand/90 font-semibold mb-2">SDN Bangunsari 01 Kecamatan Mejayan</p>
+                    <div class="flex flex-wrap gap-2 my-3">
+                        <span class="text-[10px] font-bold bg-accentGreen/10 text-accentGreen uppercase px-3 py-1 rounded-full flex items-center gap-1"><i class="fas fa-crown"></i> Ketua Operator Sekolah</span>
+                        <span class="text-[10px] font-bold bg-accentGreen/10 text-accentGreen uppercase px-3 py-1 rounded-full flex items-center gap-1"><i class="fas fa-map-marker-alt"></i> Korwil Mejayan</span>
+                    </div>
+                    <p class="text-sm text-textSand/75 leading-relaxed">
+                        Mengawali kiprah mengelola basis data pokok sekolah dasar di SDN Bangunsari 01. Mengatur validasi sistem pelaporan nasional dan memimpin koordinasi operator sekolah sekecamatan.
+                    </p>
+                </div>
+
+                <!-- 6. Magister Pendidikan (S2) -->
+                <div class="relative">
+                    <div class="timeline-dot"></div>
+                    <span class="text-xs font-bold text-textSand/60 uppercase tracking-widest bg-textSand/5 px-3 py-1 rounded-full">Lulus 2025</span>
+                    <h4 class="text-2xl font-bold text-textSand mt-4 font-syne">Magister Pendidikan (M.Pd.)</h4>
+                    <p class="text-md text-textSand/90 font-semibold mb-2">Universitas Negeri Surabaya (UNESA) — Program Studi Pendidikan Luar Biasa</p>
+                    <p class="text-sm text-textSand/75 leading-relaxed">
+                        Lulus program pascasarjana dengan fokus riset terapan di bidang kurikulum adaptif, pembelajaran berbasis projek penguatan karakter, serta implementasi strategi pendidikan inklusif bagi anak-anak didik berkebutuhan khusus.
+                    </p>
+                </div>
+
+                <!-- 7. Sarjana Hukum (S1) -->
+                <div class="relative">
+                    <div class="timeline-dot"></div>
+                    <span class="text-xs font-bold text-textSand/60 uppercase tracking-widest bg-textSand/5 px-3 py-1 rounded-full">Lulus 2014</span>
+                    <h4 class="text-2xl font-bold text-textSand mt-4 font-syne">Sarjana Hukum (SH)</h4>
+                    <p class="text-md text-textSand/90 font-semibold mb-2">Universitas Merdeka — Fakultas Hukum</p>
+                    <p class="text-sm text-textSand/75 leading-relaxed">
+                        Menempuh pendidikan hukum perdata dan tata negara. Pengetahuan perundang-undangan menjadi fondasi kokoh untuk merancang pembelajaran Pancasila dan Kewarganegaraan yang faktual.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== CONTACT SECTION ===================== -->
+    <section id="contact" class="w-full py-24 border-t border-textSand/10 relative overflow-hidden" data-aos="fade-up">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16">
+                <h2 class="text-xs uppercase tracking-widest text-accentGreen font-semibold mb-2">Hubungi Saya</h2>
+                <h3 class="text-3xl md:text-5xl font-bold font-syne">MARI BERKOLABORASI</h3>
+            </div>
+
+            <div class="bg-[#161a23]/40 border border-textSand/5 rounded-3xl overflow-hidden flex flex-col lg:flex-row shadow-2xl">
+                <!-- Info block -->
+                <div class="lg:w-2/5 bg-gradient-to-br from-emerald-950 to-bgDark text-textSand p-10 md:p-14 flex flex-col justify-between relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -mt-10 -mr-10"></div>
+                    <div class="absolute bottom-0 left-0 w-40 h-40 bg-white/5 rounded-full -mb-10 -ml-10"></div>
+
+                    <div class="relative z-10 space-y-8">
+                        <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center text-3xl mb-6">
+                            <i class="fas fa-handshake text-accentGreen"></i>
+                        </div>
+                        <h3 class="text-2xl md:text-3xl font-bold font-syne">Terbuka Untuk Kolaborasi</h3>
+                        <p class="text-textSand/75 text-sm leading-relaxed">Saya sangat terbuka untuk berdiskusi seputar inovasi media ajar, program digitalisasi sekolah dasar, narasumber workshop kependidikan, maupun konsultasi admin Dapodik.</p>
+
+                        <div class="space-y-6 pt-4">
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center shrink-0 text-accentGreen"><i class="fas fa-envelope"></i></div>
+                                <div>
+                                    <p class="text-[10px] text-textSand/50 uppercase tracking-wider mb-1">Email</p>
+                                    <p class="font-medium text-sm">fudakwindukoku@gmail.com</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center shrink-0 text-accentGreen"><i class="fas fa-phone"></i></div>
+                                <div>
+                                    <p class="text-[10px] text-textSand/50 uppercase tracking-wider mb-1">WhatsApp</p>
+                                    <p class="font-medium text-sm">082142107586</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center shrink-0 text-accentGreen"><i class="fas fa-school"></i></div>
+                                <div>
+                                    <p class="text-[10px] text-textSand/50 uppercase tracking-wider mb-1">Instansi Utama</p>
+                                    <p class="font-medium text-sm">SDN Candimulyo 01, Jawa Timur</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative z-10 mt-12 flex gap-4">
+                        <a href="https://www.facebook.com/winduka" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/5 hover:bg-accentGreen hover:text-white transition-colors flex items-center justify-center" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/kata_windu" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/5 hover:bg-accentGreen hover:text-white transition-colors flex items-center justify-center" title="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.tiktok.com/@winduka" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/5 hover:bg-accentGreen hover:text-white transition-colors flex items-center justify-center" title="TikTok"><i class="fab fa-tiktok"></i></a>
+                        <a href="https://www.youtube.com/SDNNGADIREJO03?sub_confirmation=1" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/5 hover:bg-accentGreen hover:text-white transition-colors flex items-center justify-center" title="YouTube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <!-- Form block -->
+                <div class="lg:w-3/5 p-10 md:p-14">
+                    <h4 class="text-2xl font-bold mb-2 font-syne">Kirim Pesan Langsung</h4>
+                    <p class="text-textSand/60 text-sm mb-8">Silakan lengkapi formulir di bawah ini untuk memulai obrolan kependidikan.</p>
+                    <form id="contactForm">
+                        <div class="grid md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-textSand/65 mb-2">Nama Lengkap</label>
+                                <input type="text" id="contactName" required class="w-full px-4 py-3 rounded-xl border border-textSand/10 bg-bgDark/50 text-textSand focus:ring-2 focus:ring-accentGreen focus:border-transparent transition-all outline-none" placeholder="Nama Anda">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-textSand/65 mb-2">Alamat Email</label>
+                                <input type="email" id="contactEmail" required class="w-full px-4 py-3 rounded-xl border border-textSand/10 bg-bgDark/50 text-textSand focus:ring-2 focus:ring-accentGreen focus:border-transparent transition-all outline-none" placeholder="email@contoh.com">
+                            </div>
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-textSand/65 mb-2">Subjek Keperluan</label>
+                            <input type="text" id="contactSubject" required class="w-full px-4 py-3 rounded-xl border border-textSand/10 bg-bgDark/50 text-textSand focus:ring-2 focus:ring-accentGreen focus:border-transparent transition-all outline-none" placeholder="Cth: Kolaborasi Pembuatan Media Storyline">
+                        </div>
+                        <div class="mb-8">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-textSand/65 mb-2">Pesan Anda</label>
+                            <textarea id="contactMessage" required rows="4" class="w-full px-4 py-3 rounded-xl border border-textSand/10 bg-bgDark/50 text-textSand focus:ring-2 focus:ring-accentGreen focus:border-transparent transition-all outline-none resize-none" placeholder="Tuliskan pesan detail Anda..."></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-4 bg-accentGreen hover:bg-emerald-600 text-bgDark hover:text-white rounded-xl font-bold shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                            Kirim Pesan <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer class="border-t border-textSand/10 py-8 bg-bgDark">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white font-bold text-xs font-syne">FW</div>
+                <p class="text-textSand/50 text-sm">© 2026 <span class="font-semibold text-textSand/70">FUDAK WINDUKO, SH., M.Pd.</span> Hak Cipta Dilindungi.</p>
+            </div>
+            <div class="flex gap-4 text-sm font-medium text-textSand/50">
+                <a href="#home"       class="hover:text-accentGreen transition-colors">Beranda</a>
+                <span>·</span>
+                <a href="#competency" class="hover:text-accentGreen transition-colors">Kompetensi</a>
+                <span>·</span>
+                <a href="#contact"    class="hover:text-accentGreen transition-colors">Kontak</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

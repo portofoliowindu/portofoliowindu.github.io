@@ -1,0 +1,221 @@
+/* ==========================================================================
+   CSS Stylesheet — Portofolio FUDAK WINDUKO, SH., M.Pd.
+   Theme: Next.js Inspired Premium Dark (Syed Moinuddin Style)
+   Colors: Background #0E1016, Text #e4ded7, Accent #16a34a (Emerald Green)
+   ========================================================================== */
+
+/* Custom Fonts & Core Reset */
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --bg-dark: #0E1016;
+    --text-sand: #e4ded7;
+    --accent-green: #10b981;
+    --accent-green-dark: #059669;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-sand);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .font-syne {
+    font-family: 'Syne', sans-serif;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+    background: #212531;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-green);
+}
+
+/* Preloader Page Overlay */
+.preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-dark);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+}
+
+.preloader.fade-out {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-100%);
+}
+
+.texts-container span {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUpText 0.5s forwards;
+}
+
+.texts-container span:nth-child(1) { animation-delay: 0.2s; }
+.texts-container span:nth-child(2) { animation-delay: 0.7s; }
+.texts-container span:nth-child(3) { animation-delay: 1.2s; }
+
+@keyframes fadeUpText {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Glass Navbar */
+.glass-nav {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(228, 222, 215, 0.05);
+}
+
+/* Huge Text Header */
+.huge-text {
+    font-size: clamp(60px, 15vw, 200px);
+    font-weight: 800;
+    line-height: 0.82em;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+}
+
+.accent-gradient-text {
+    background: linear-gradient(135deg, var(--text-sand) 30%, var(--accent-green) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Competency Cards styling */
+.competency-card {
+    min-height: 12.5rem;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.competency-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.competency-card:hover::before {
+    opacity: 1;
+}
+
+/* Smooth active state filter btns */
+.filter-btn {
+    border: 1px solid rgba(228, 222, 215, 0.1);
+    transition: all 0.3s ease;
+}
+
+.filter-btn.active {
+    background-color: var(--text-sand);
+    color: var(--bg-dark);
+    border-color: var(--text-sand);
+}
+
+/* Grayscale Image Hover effect */
+.grayscale-img-container img {
+    filter: grayscale(100%);
+    transition: filter 0.5s ease, transform 0.5s ease;
+}
+
+.grayscale-img-container:hover img {
+    filter: grayscale(0%);
+    transform: scale(1.02);
+}
+
+/* Timeline Custom Borders */
+.timeline-dot {
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--accent-green);
+    background-color: var(--bg-dark);
+    border-radius: 50%;
+    position: absolute;
+    left: -7px;
+    top: 30px;
+    z-index: 10;
+}
+
+/* Swiper / Marquee Infinite Text scrolling animation */
+@keyframes infiniteScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+.marquee-container {
+    overflow: hidden;
+    white-space: nowrap;
+    display: flex;
+}
+
+.marquee-content {
+    display: inline-block;
+    animation: infiniteScroll 25s linear infinite;
+}
+
+/* ==========================================================================
+   Responsive Reset & Large Display Scaling Architectures
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+/* Responsive Root Scaling (Fluid Typography & Spacing) */
+@media (min-width: 1920px) {
+    html {
+        font-size: 18px; /* Scales layout 12.5% up */
+    }
+}
+
+@media (min-width: 2560px) {
+    html {
+        font-size: 22px; /* Scales layout 37.5% up */
+    }
+}
+
+@media (min-width: 3840px) {
+    html {
+        font-size: 28px; /* Scales layout 75% up for 4K Smartboards */
+    }
+}
+
+/* Additional accessibility / touch safety on small screens */
+@media (max-width: 480px) {
+    .huge-text {
+        font-size: clamp(48px, 12vw, 80px);
+    }
+}
