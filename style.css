@@ -151,6 +151,10 @@ h1, h2, h3, .font-syne {
 }
 
 /* Timeline Custom Borders */
+.timeline-card {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 .timeline-dot {
     width: 12px;
     height: 12px;
@@ -161,6 +165,13 @@ h1, h2, h3, .font-syne {
     left: -7px;
     top: 30px;
     z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.timeline-card:hover .timeline-dot {
+    background-color: var(--accent-green);
+    box-shadow: 0 0 12px var(--accent-green);
+    transform: scale(1.3);
 }
 
 /* Swiper / Marquee Infinite Text scrolling animation */
