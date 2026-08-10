@@ -327,6 +327,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 9. Timeline Detail Modal Handler
     const timelineData = {
+        "10": {
+            period: "Sabtu, 8 Agustus 2026",
+            title: "Bimtek Pelatihan Pembuatan Media Pembelajaran Digital",
+            institution: "Aula Korwil V Kecamatan Wungu — Peningkatan Mutu Pendidik & Tendik",
+            badges: [
+                { text: "Bimtek Media Digital", icon: "fas fa-laptop-code", color: "bg-sky-500/10 text-sky-400 border border-sky-500/20" },
+                { text: "Aula Korwil V Wungu", icon: "fas fa-location-dot", color: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" },
+                { text: "78 Peserta Pendidik", icon: "fas fa-users", color: "bg-amber-500/10 text-amber-400 border border-amber-500/20" }
+            ],
+            overview: "Pelaksanaan Bimbingan Teknis (Bimtek) Pelatihan Pembuatan Media Pembelajaran Digital dalam rangka Peningkatan Mutu Pendidik dan Tenaga Kependidikan di wilayah Korwil V Kecamatan Wungu. Kegiatan ini membekali 78 orang peserta pendidik dengan kemampuan merancang media ajar digital interaktif yang efektif dan menarik.",
+            highlights: [
+                "<strong>Hari / Tanggal Pelaksanaan:</strong> Sabtu, 8 Agustus 2026",
+                "<strong>Waktu Pembukaan:</strong> Pukul 08.00 WIB s.d. Selesai",
+                "<strong>Tempat / Lokasi Kegiatan:</strong> Aula Korwil V Kecamatan Wungu",
+                "<strong>Jumlah Peserta:</strong> 78 Orang Pendidik & Tenaga Kependidikan",
+                "<strong>Materi Utama & Hasil Karya:</strong> Praktik pembuatan media pembelajaran digital interaktif, integrasi konten multimedia, serta teknik penyampaian pembelajaran modern."
+            ],
+            photos: [
+                { url: "https://drive.google.com/file/d/13V_v2aIiffMMuAnRdUZzNlyaA7Rxo3-c/view?usp=sharing", caption: "Dokumentasi Pembukaan Bimtek Media Pembelajaran Digital Korwil V Wungu — 8 Agustus 2026" },
+                { url: "https://drive.google.com/file/d/166mgE9X7D61CIl-vD7AjubuY1OC8j_xz/view?usp=sharing", caption: "Dokumentasi Pemaparan Materi Pembuatan Media Digital di Aula Korwil V Wungu" },
+                { url: "https://drive.google.com/file/d/17oTm5d_0pMa4RSYZaFptBFO54MqpaFo8/view?usp=sharing", caption: "Dokumentasi Kehadiran & Antusiasme 78 Peserta Pendidik & Tendik" },
+                { url: "https://drive.google.com/file/d/19EIDOPTBB1NcVIvsV6l2T_rk6-ivsZSy/view?usp=sharing", caption: "Dokumentasi Praktik Langsung Perancangan Media Ajar Interaktif" },
+                { url: "https://drive.google.com/file/d/1ExohYJGjr5KtH93afq1jUZGIwwxgK5Cz/view?usp=sharing", caption: "Dokumentasi Pendampingan Teknis Pemanfaatan Software Media Pembelajaran" },
+                { url: "https://drive.google.com/file/d/1Fo4VJvh1E7545V0wnl4h_1osHe1y3P42/view?usp=sharing", caption: "Dokumentasi Suasana Pelatihan Pendidik di Aula Korwil V Kecamatan Wungu" },
+                { url: "https://drive.google.com/file/d/1FtD8YXEAq0D_hHim1goYKBa6gRD1ULan/view?usp=sharing", caption: "Dokumentasi Diskusi Kelompok Penyusunan Konten Pembelajaran Digital" },
+                { url: "https://drive.google.com/file/d/1KYZt7GOUcuoHP9M6kFivKrkzGR09S8LW/view?usp=sharing", caption: "Dokumentasi Demonstrasi Fitur Media Pembelajaran Interaktif Sekolah" },
+                { url: "https://drive.google.com/file/d/1LUMQxp4Z6RRdnGgbW-JSbVxwU4yX9QWG/view?usp=sharing", caption: "Dokumentasi Konsultasi Teknis & Bimbingan Praktik Guru SD" },
+                { url: "https://drive.google.com/file/d/1My7Yz5jYUbk61uUq4ScdBzudgBA1XWRt/view?usp=sharing", caption: "Dokumentasi Presentasi Hasil Media Pembelajaran Digital Peserta Bimtek" },
+                { url: "https://drive.google.com/file/d/1RcFRfgvBe60045Bi8jyb3oDKOY2Tozdt/view?usp=sharing", caption: "Dokumentasi Review & Evaluasi Karya Media Pembelajaran Pendidik" },
+                { url: "https://drive.google.com/file/d/1RzD9bR4X5n9QXmY56pcEGQJi-_OSO2Cu/view?usp=sharing", caption: "Dokumentasi Sesi Pembukaan Pukul 08.00 WIB Aula Korwil V Wungu" },
+                { url: "https://drive.google.com/file/d/1UX6mlW3RpblMiApqjhKnWu_UQbnXJhst/view?usp=sharing", caption: "Dokumentasi Pembimbingan Integrasi Multimedia & Audio Visual Ajar" },
+                { url: "https://drive.google.com/file/d/1W3VP--xZFkj3cdJErI3q8Vitm8MVY0qw/view?usp=sharing", caption: "Dokumentasi Simulasi Penggunaan Media Digital di Kelas Sekolah Dasar" },
+                { url: "https://drive.google.com/file/d/1ZWxgk9BOSugWA__7LG8O9oSI10MIztEL/view?usp=sharing", caption: "Dokumentasi Foto Bersama 78 Peserta Bimtek Korwil V Wungu" },
+                { url: "https://drive.google.com/file/d/1Za0ODC_GR_xkHtJGIkQHWvyfD0DmDAHy/view?usp=sharing", caption: "Dokumentasi Penutupan & Respon Positif Pelatihan Media Digital" },
+                { url: "https://drive.google.com/file/d/1bStWXZdX6UWN_idr-cReiymkBIyy3SIy/view?usp=sharing", caption: "Dokumentasi Uji Coba Interaktivitas Media Ajar Hasil Karya Peserta" },
+                { url: "https://drive.google.com/file/d/1cSRFka81DKSVDDNLGRJSBacDVNg4aV3m/view?usp=sharing", caption: "Dokumentasi Aksi Praktik Baik Digitalisasi Pembelajaran Korwil V" },
+                { url: "https://drive.google.com/file/d/1cXQg3gScw5c50rsHVl35MJqHmbZ5V__c/view?usp=sharing", caption: "Dokumentasi Fasilitasi Pelatihan Pembuatan Media Digital Interaktif" },
+                { url: "https://drive.google.com/file/d/1d86caUXGt-B7RrhIafwIEidUmhwZ4WxS/view?usp=sharing", caption: "Dokumentasi Komitmen Peningkatan Mutu Pendidik Korwil V Wungu" },
+                { url: "https://drive.google.com/file/d/1dEZR014lCP-DdgMIFD5AmoJYP5RQsG4z/view?usp=sharing", caption: "Dokumentasi Pengarahan Teknis & Sambutan Pembukaan Bimtek" },
+                { url: "https://drive.google.com/file/d/1dNhnsBb7cohpV_fjinM5xUEyJqKYIS7U/view?usp=sharing", caption: "Dokumentasi Pendampingan Desain Visual & Layout Media Ajar" },
+                { url: "https://drive.google.com/file/d/1h0W99GK3A3MZz8RYgIlv93oAzOgzcIKs/view?usp=sharing", caption: "Dokumentasi Gelar Hasil Karya Media Pembelajaran Digital Guru" },
+                { url: "https://drive.google.com/file/d/1iKDYnuSmYxDHyF74J1BTaib9NpYOqm85/view?usp=sharing", caption: "Dokumentasi Kolaborasi Pendidik & Tendik se-Kecamatan Wungu" },
+                { url: "https://drive.google.com/file/d/1j7KIw4u5FmosHcRC3Z9HzRLDm5NrPbpK/view?usp=sharing", caption: "Dokumentasi Sesi Tanya Jawab & Solusi Kendala Digitalisasi Sekolah" },
+                { url: "https://drive.google.com/file/d/1jmISwTU_IBaWyxULA1mg-MVIMpuluI2A/view?usp=sharing", caption: "Dokumentasi Praktik Pengolahan Konten Pembelajaran Interaktif" },
+                { url: "https://drive.google.com/file/d/1lJdU5OZ3yg1KZkiA_xvtg68eg7Myhb3K/view?usp=sharing", caption: "Dokumentasi Penguatan Pembelajaran Berbasis Teknologi Digital" },
+                { url: "https://drive.google.com/file/d/1nUPxsK7VjWBuscJHfN6tjMPT0B5ezqm4/view?usp=sharing", caption: "Dokumentasi Pembagian Sertifikat & Dokumen Kegiatan Bimtek" },
+                { url: "https://drive.google.com/file/d/1oCTCJE0Va0QBSEqpdKm_GPChEqxfrGPy/view?usp=sharing", caption: "Dokumentasi Suasana Aula Korwil V Kecamatan Wungu Madiun" },
+                { url: "https://drive.google.com/file/d/1pszYIizfWFNbmHj4waIxSnzmv_IRpIyA/view?usp=sharing", caption: "Dokumentasi Kebersamaan Pendidik & Panitia Pelaksana Bimtek" },
+                { url: "https://drive.google.com/file/d/1sPGRbIDReZ_sObiSCB-yMNdsqSwdX3dd/view?usp=sharing", caption: "Dokumentasi Penyerahan Berkas Dokumentasi Hasil Karya Media" },
+                { url: "https://drive.google.com/file/d/1vlhS3E5zAVpLji3AKZlNthGNI206c5h4/view?usp=sharing", caption: "Dokumentasi Aktivitas Belajar Mandiri Peserta Bimtek Digital" },
+                { url: "https://drive.google.com/file/d/1z3xG0MCelamo3dx309CaMDT4wShYYhum/view?usp=sharing", caption: "Dokumentasi Lengkap Bimtek Pembuatan Media Digital Korwil V" }
+            ],
+            driveUrl: "https://drive.google.com/drive/u/5/folders/1mD4odOiHMMQSQK0W2LH5lC0g0Tfq7DEr"
+        },
         "9": {
             period: "Kamis, 23 Juli 2026",
             title: "Workshop Peningkatan Mutu Pendidik & Tendik",
@@ -425,7 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
             driveUrl: "https://drive.google.com/drive/u/5/folders/1BX70mSY4QCYnSzvfuW8UlJwjPrmWHGOl"
         },
         "1": {
-            period: "2026 – Sekarang",
+            period: "Januari - Juni 2026",
             title: "Guru Kelas SD",
             institution: "SDN Candimulyo 01 Kecamatan Dolopo (Aktif Mengajar)",
             badges: [

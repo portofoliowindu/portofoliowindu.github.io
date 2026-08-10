@@ -8,7 +8,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-    --bg-dark: #0E1016;
+    --bg-dark: #090d16;
     --text-sand: #e4ded7;
     --accent-green: #10b981;
     --accent-green-dark: #059669;
@@ -16,7 +16,8 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    background-color: var(--bg-dark);
+    background: linear-gradient(135deg, #060911 0%, #0b172a 20%, #07221b 45%, #160d2e 70%, #060c18 100%);
+    background-attachment: fixed;
     color: var(--text-sand);
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
@@ -31,10 +32,10 @@ h1, h2, h3, .font-syne {
     width: 6px;
 }
 ::-webkit-scrollbar-track {
-    background: var(--bg-dark);
+    background: #060911;
 }
 ::-webkit-scrollbar-thumb {
-    background: #212531;
+    background: #1e293b;
     border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -48,7 +49,7 @@ h1, h2, h3, .font-syne {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: var(--bg-dark);
+    background: linear-gradient(135deg, #060911 0%, #0b172a 50%, #07221b 100%);
     z-index: 9999;
     display: flex;
     align-items: center;
@@ -268,8 +269,8 @@ html, body {
     position: absolute;
     bottom: -150px;
     background-color: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.22); /* Grayish/Off-white border */
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.18)); /* Glowing aura effect */
+    border: 1.5px solid rgba(16, 185, 129, 0.4);
+    filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.35));
     pointer-events: none;
     animation: floatUpShape 25s linear infinite;
     opacity: 0;
@@ -277,22 +278,29 @@ html, body {
 
 .shape.circle {
     border-radius: 50%;
+    border-color: rgba(16, 185, 129, 0.45);
+    filter: drop-shadow(0 0 15px rgba(16, 185, 129, 0.4));
 }
 
 .shape.square {
-    border-radius: 8px;
+    border-radius: 12px;
+    border-color: rgba(129, 140, 248, 0.45);
+    filter: drop-shadow(0 0 15px rgba(129, 140, 248, 0.4));
 }
 
 .shape.triangle {
     border: none;
-    background-color: rgba(255, 255, 255, 0.08); /* Off-white fill */
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(245, 158, 11, 0.1));
+    filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.4));
     clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
     width: 60px;
     height: 52px;
 }
 
 .shape.rectangle {
-    border-radius: 6px;
+    border-radius: 10px;
+    border-color: rgba(56, 189, 248, 0.45);
+    filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.4));
     width: 40px;
     height: 70px;
 }
