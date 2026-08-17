@@ -229,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 7. Visitor Counter (Harian, Bulanan, Tahunan)
+    // 7. Resilient & Persistent Visitor Counter (Harian, Bulanan, Tahunan)
     const initVisitorCounter = () => {
         const namespace = "portofolio_fudak_winduko";
         const today = new Date();
@@ -237,32 +237,78 @@ document.addEventListener('DOMContentLoaded', () => {
         const mm = String(today.getMonth() + 1).padStart(2, '0');
         const dd = String(today.getDate()).padStart(2, '0');
 
+        const dateDayStr = `${yyyy}-${mm}-${dd}`;
+        const dateMonthStr = `${yyyy}-${mm}`;
+        const dateYearStr = `${yyyy}`;
+
         const dayKey = `day_${yyyy}_${mm}_${dd}`;
         const monthKey = `month_${yyyy}_${mm}`;
         const yearKey = `year_${yyyy}`;
 
-        // Base/offset numbers so it looks professional on first loads (set to 0 for real stats)
-        const BASE_DAILY = 0;
-        const BASE_MONTHLY = 0;
-        const BASE_YEARLY = 0;
+        // Device Local Storage Accumulation Logic
+        const savedDayDate = localStorage.getItem('fw_visit_date_day');
+        const savedMonthDate = localStorage.getItem('fw_visit_date_month');
+        const savedYearDate = localStorage.getItem('fw_visit_date_year');
 
-        // Check session storage to avoid double increments on page refreshes
-        const hasVisited = sessionStorage.getItem('has_visited_current_session');
-        const isLocalDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        let localDayCount = parseInt(localStorage.getItem('fw_count_day') || '1', 10);
+        let localMonthCount = parseInt(localStorage.getItem('fw_count_month') || '1', 10);
+        let localYearCount = parseInt(localStorage.getItem('fw_count_year') || '1', 10);
 
-        // Increment or just fetch
-        let endpointType = 'up'; // default: increment
-        if (hasVisited || isLocalDevelopment) {
-            endpointType = 'get'; // if already visited or local testing, just read
+        // Session check to increment on new session
+        const hasSessionVisit = sessionStorage.getItem('fw_session_visited');
+
+        if (!hasSessionVisit) {
+            sessionStorage.setItem('fw_session_visited', 'true');
+
+            // Handle Day Date Reset / Increment
+            if (savedDayDate !== dateDayStr) {
+                localStorage.setItem('fw_visit_date_day', dateDayStr);
+                localDayCount = 1;
+            } else {
+                localDayCount += 1;
+            }
+            localStorage.setItem('fw_count_day', localDayCount.toString());
+
+            // Handle Month Date Reset / Increment
+            if (savedMonthDate !== dateMonthStr) {
+                localStorage.setItem('fw_visit_date_month', dateMonthStr);
+                localMonthCount = 1;
+            } else {
+                localMonthCount += 1;
+            }
+            localStorage.setItem('fw_count_month', localMonthCount.toString());
+
+            // Handle Year Date Reset / Increment
+            if (savedYearDate !== dateYearStr) {
+                localStorage.setItem('fw_visit_date_year', dateYearStr);
+                localYearCount = 1;
+            } else {
+                localYearCount += 1;
+            }
+            localStorage.setItem('fw_count_year', localYearCount.toString());
         }
 
+        // DOM Update Helper
+        const updateDOM = (day, month, year) => {
+            const elDay = document.getElementById('countHarian');
+            const elMonth = document.getElementById('countBulanan');
+            const elYear = document.getElementById('countTahunan');
+            if (elDay) elDay.innerText = Math.max(1, day).toLocaleString('id-ID');
+            if (elMonth) elMonth.innerText = Math.max(1, month).toLocaleString('id-ID');
+            if (elYear) elYear.innerText = Math.max(1, year).toLocaleString('id-ID');
+        };
+
+        // Render persistent counts immediately so UI never shows 0!
+        updateDOM(localDayCount, localMonthCount, localYearCount);
+
+        // Try syncing with remote Counter API if online
+        const endpointType = hasSessionVisit ? 'get' : 'up';
         const fetchCount = (key, type) => {
             const url = `https://api.counterapi.dev/v1/${namespace}/${key}/${type}`;
-            return fetch(url)
-                .then(res => {
-                    if (!res.ok) throw new Error('API response error');
-                    return res.json();
-                });
+            return fetch(url).then(res => {
+                if (!res.ok) throw new Error('Counter API response error');
+                return res.json();
+            });
         };
 
         Promise.all([
@@ -271,32 +317,18 @@ document.addEventListener('DOMContentLoaded', () => {
             fetchCount(yearKey, endpointType)
         ])
         .then(([dayData, monthData, yearData]) => {
-            if (endpointType === 'up') {
-                sessionStorage.setItem('has_visited_current_session', 'true');
-            }
-            
-            const dayVal = (dayData.count || 0) + BASE_DAILY;
-            const monthVal = (monthData.count || 0) + BASE_MONTHLY;
-            const yearVal = (yearData.count || 0) + BASE_YEARLY;
+            const apiDay = dayData && typeof dayData.count === 'number' ? dayData.count : 0;
+            const apiMonth = monthData && typeof monthData.count === 'number' ? monthData.count : 0;
+            const apiYear = yearData && typeof yearData.count === 'number' ? yearData.count : 0;
 
-            // Update UI with formatted numbers
-            const elDay = document.getElementById('countHarian');
-            const elMonth = document.getElementById('countBulanan');
-            const elYear = document.getElementById('countTahunan');
+            const finalDay = Math.max(localDayCount, apiDay);
+            const finalMonth = Math.max(localMonthCount, apiMonth);
+            const finalYear = Math.max(localYearCount, apiYear);
 
-            if (elDay) elDay.innerText = dayVal.toLocaleString('id-ID');
-            if (elMonth) elMonth.innerText = monthVal.toLocaleString('id-ID');
-            if (elYear) elYear.innerText = yearVal.toLocaleString('id-ID');
+            updateDOM(finalDay, finalMonth, finalYear);
         })
-        .catch(err => {
-            console.warn("Visitor counter API error, using static bases:", err);
-            // Fallback display
-            const elDay = document.getElementById('countHarian');
-            const elMonth = document.getElementById('countBulanan');
-            const elYear = document.getElementById('countTahunan');
-            if (elDay) elDay.innerText = BASE_DAILY.toLocaleString('id-ID');
-            if (elMonth) elMonth.innerText = BASE_MONTHLY.toLocaleString('id-ID');
-            if (elYear) elYear.innerText = BASE_YEARLY.toLocaleString('id-ID');
+        .catch(() => {
+            // External API fallback: local device accumulation remains active and rendered
         });
     };
 
@@ -327,6 +359,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 9. Timeline Detail Modal Handler
     const timelineData = {
+        "11": {
+            period: "Sabtu, 15 Agustus 2026",
+            title: "Bimtek Pelatihan Pembuatan Media Pembelajaran Digital",
+            institution: "SLB YPAC SURABAYA — Peningkatan Mutu Pendidik & Tendik",
+            badges: [
+                { text: "Bimtek Media Inklusi", icon: "fas fa-laptop-code", color: "bg-sky-500/10 text-sky-400 border border-sky-500/20" },
+                { text: "SLB YPAC Surabaya", icon: "fas fa-location-dot", color: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" },
+                { text: "12 Peserta Pendidik", icon: "fas fa-users", color: "bg-amber-500/10 text-amber-400 border border-amber-500/20" }
+            ],
+            overview: "Pelaksanaan Bimbingan Teknis (Bimtek) Pelatihan Pembuatan Media Pembelajaran Digital dalam rangka Peningkatan Mutu Pendidik dan Tenaga Kependidikan di SLB YPAC Surabaya. Kegiatan ini membekali 12 orang peserta pendidik dengan keterampilan merancang media pembelajaran digital yang inklusif, adaptif, serta ramah bagi anak berkebutuhan khusus.",
+            highlights: [
+                "<strong>Hari / Tanggal Pelaksanaan:</strong> Sabtu, 15 Agustus 2026",
+                "<strong>Waktu Pembukaan:</strong> Pukul 08.00 WIB s.d. Selesai",
+                "<strong>Tempat / Lokasi Kegiatan:</strong> SLB YPAC SURABAYA",
+                "<strong>Jumlah Peserta:</strong> 12 Orang Pendidik & Tenaga Kependidikan",
+                "<strong>Materi Utama & Hasil Karya:</strong> Praktik perancangan media ajar digital interaktif, adaptasi konten multimedia pembelajaran khusus, serta teknik pendampingan digital inklusi."
+            ],
+            photos: [
+                { url: "https://drive.google.com/file/d/1294BQimH83imJGy8UvT229dVziZ3jb_K/view?usp=sharing", caption: "Dokumentasi Pembukaan Bimtek Media Pembelajaran Digital di SLB YPAC Surabaya — 15 Agustus 2026" },
+                { url: "https://drive.google.com/file/d/12dt9KGWGVdZwaUoZGgQMKeizZLiWJXFZ/view?usp=sharing", caption: "Dokumentasi Sesi Pemaparan Materi Media Pembelajaran Digital Adaptif Inklusi" },
+                { url: "https://drive.google.com/file/d/13Gt73MbkKX4-in4P1SFPuaRBc2WCnvH7/view?usp=sharing", caption: "Dokumentasi Antusiasme 12 Peserta Pendidik & Tendik SLB YPAC Surabaya" },
+                { url: "https://drive.google.com/file/d/16ND3KM1UVGU1JP4sCNzjg3OdylE_Ek8Z/view?usp=sharing", caption: "Dokumentasi Praktik Langsung Pembuatan Media Ajar Digital Khusus" },
+                { url: "https://drive.google.com/file/d/16vOsyRdmCjTSxB6ZaPvRD4gAvKCw1Ric/view?usp=sharing", caption: "Dokumentasi Pendampingan Intensif Perancangan Modul Ajar Digital Interaktif" },
+                { url: "https://drive.google.com/file/d/17vgZnHrYuhrWn-LDgmmhSEBiRwIFj0xi/view?usp=sharing", caption: "Dokumentasi Suasana Pelatihan Pendidik Inklusi di SLB YPAC Surabaya" },
+                { url: "https://drive.google.com/file/d/1DLxhjldEKjuQru8HC-V1-MggJQ_-M7z8/view?usp=sharing", caption: "Dokumentasi Diskusi Interaktif Kebutuhan Media Pembelajaran Anak Khusus" },
+                { url: "https://drive.google.com/file/d/1G6J_rHGBdOTdwtyBy9rhRdabXdINcBrp/view?usp=sharing", caption: "Dokumentasi Demonstrasi Fitur Media Pembelajaran Digital Interaktif" },
+                { url: "https://drive.google.com/file/d/1ID8o3H0GEAlG-eD2a9kVHPKks9w1zP9j/view?usp=sharing", caption: "Dokumentasi Bimbingan Praktis Penyusunan Visual & Audio Pembelajaran" },
+                { url: "https://drive.google.com/file/d/1K9IRwVW_jnU8IvUC2OClCfYN6CplDI4Q/view?usp=sharing", caption: "Dokumentasi Presentasi Karya Media Digital Peserta Bimtek SLB YPAC" },
+                { url: "https://drive.google.com/file/d/1LQAh3YLv-cKVDqDVIovdEV0YOdPVebBa/view?usp=sharing", caption: "Dokumentasi Review & Uji Coba Media Pembelajaran Digital Hasil Karya Guru" },
+                { url: "https://drive.google.com/file/d/1NqUtCdFusNgEqk8ezLNUFGpnzBTZmnaF/view?usp=sharing", caption: "Dokumentasi Sesi Pembukaan Pukul 08.00 WIB SLB YPAC Surabaya" },
+                { url: "https://drive.google.com/file/d/1QGKs_X98QegfSCDw-B1LG_-AKFx2wStR/view?usp=sharing", caption: "Dokumentasi Konsultasi Teknis Aplikasi & Tools Media Digital" },
+                { url: "https://drive.google.com/file/d/1ThfjIzzOyACv3dqbJhIzOb4WPsEobQsg/view?usp=sharing", caption: "Dokumentasi Simulasi Pembelajaran Inklusi Berbantuan Media Digital" },
+                { url: "https://drive.google.com/file/d/1UYNODZ01at9fEjguWuETV500K7dv3IUH/view?usp=sharing", caption: "Dokumentasi Foto Bersama 12 Peserta Bimtek SLB YPAC Surabaya" },
+                { url: "https://drive.google.com/file/d/1VW-N_cT_O6pVB2ERLxpYUlfL_gwxKTL7/view?usp=sharing", caption: "Dokumentasi Sesi Tanya Jawab & Solusi Digitalisasi Sekolah Khusus" },
+                { url: "https://drive.google.com/file/d/1_G-coSPC3Toh5dG2tJM279BtiHzSicgT/view?usp=sharing", caption: "Dokumentasi Eksplorasi Media Ajar Interaktif Adaptif Anak ABK" },
+                { url: "https://drive.google.com/file/d/1a3UC7ChODTtbUVBkpCibiCbuS2hNo08m/view?usp=sharing", caption: "Dokumentasi Aksi Praktik Baik Digitalisasi Pendidikan Inklusi Surabaya" },
+                { url: "https://drive.google.com/file/d/1ank3O1JIcltGI-SeBrQU_KNUI1TAVvGK/view?usp=sharing", caption: "Dokumentasi Pendampingan Desain Layout & Konten Interaktif" },
+                { url: "https://drive.google.com/file/d/1b6xqot3MIrQAJdPU8fjEpaBBSoJSY9YO/view?usp=sharing", caption: "Dokumentasi Komitmen Peningkatan Mutu Pendidik SLB YPAC Surabaya" },
+                { url: "https://drive.google.com/file/d/1gF3RYIPS7LHxTcz1UawBMLtx8B7P2m-d/view?usp=sharing", caption: "Dokumentasi Fasilitasi Pelatihan Pembuatan Media Digital Inklusif" },
+                { url: "https://drive.google.com/file/d/1gZ26qTUiDe4o3p66bdIZNQDjwA5T1U17/view?usp=sharing", caption: "Dokumentasi Pengarahan & Sambutan Sesi Pelatihan Guru SLB" },
+                { url: "https://drive.google.com/file/d/1gm226SMDfnmkE0v6GIQF1JnR2_kXlC3r/view?usp=sharing", caption: "Dokumentasi Gelar Hasil Karya Media Pembelajaran Digital Peserta" },
+                { url: "https://drive.google.com/file/d/1k-ABUEpEm4C70HBLSsmCwluNNOCgjr7m/view?usp=sharing", caption: "Dokumentasi Kebersamaan Pendidik & Panitia Pelaksana Bimtek" },
+                { url: "https://drive.google.com/file/d/1pDBXhWEcxx6jwjDDoIu6xHAN7kRMDz3g/view?usp=sharing", caption: "Dokumentasi Penyerahan Sertifikat & Dokumen Kegiatan Pelatihan" },
+                { url: "https://drive.google.com/file/d/1sOc1wVa8MhsO1gYRXGCTnnyxcwosrxV2/view?usp=sharing", caption: "Dokumentasi Suasana Pembelajaran Mandiri Peserta Bimtek Digital" },
+                { url: "https://drive.google.com/file/d/1syBVZcsMiO9V8UfXoKNUfZU9RlsBSQg_/view?usp=sharing", caption: "Dokumentasi Lengkap Bimtek Pembuatan Media Digital SLB YPAC Surabaya" }
+            ],
+            driveUrl: "https://drive.google.com/drive/u/5/folders/1khQ0qhY5k1A5cm3xHiqWa6ZbJjp-imsS"
+        },
         "10": {
             period: "Sabtu, 8 Agustus 2026",
             title: "Bimtek Pelatihan Pembuatan Media Pembelajaran Digital",

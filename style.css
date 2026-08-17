@@ -16,7 +16,7 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #060911 0%, #0b172a 20%, #07221b 45%, #160d2e 70%, #060c18 100%);
+    background: linear-gradient(135deg, #090d16 0%, #1f0b12 15%, #241407 30%, #1a1e0b 45%, #08211b 60%, #0a172c 75%, #1d0f2b 90%, #151a24 100%);
     background-attachment: fixed;
     color: var(--text-sand);
     overflow-x: hidden;
@@ -269,8 +269,8 @@ html, body {
     position: absolute;
     bottom: -150px;
     background-color: transparent;
-    border: 1.5px solid rgba(16, 185, 129, 0.4);
-    filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.35));
+    border: 1.5px solid rgba(239, 68, 68, 0.45);
+    filter: drop-shadow(0 0 14px rgba(239, 68, 68, 0.35));
     pointer-events: none;
     animation: floatUpShape 25s linear infinite;
     opacity: 0;
@@ -278,20 +278,20 @@ html, body {
 
 .shape.circle {
     border-radius: 50%;
-    border-color: rgba(16, 185, 129, 0.45);
-    filter: drop-shadow(0 0 15px rgba(16, 185, 129, 0.4));
+    border-color: rgba(234, 179, 8, 0.5);
+    filter: drop-shadow(0 0 16px rgba(234, 179, 8, 0.45));
 }
 
 .shape.square {
     border-radius: 12px;
-    border-color: rgba(129, 140, 248, 0.45);
-    filter: drop-shadow(0 0 15px rgba(129, 140, 248, 0.4));
+    border-color: rgba(59, 130, 246, 0.45);
+    filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.4));
 }
 
 .shape.triangle {
     border: none;
-    background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(245, 158, 11, 0.1));
-    filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.4));
+    background: linear-gradient(135deg, rgba(249, 115, 22, 0.4), rgba(239, 68, 68, 0.2));
+    filter: drop-shadow(0 0 16px rgba(249, 115, 22, 0.45));
     clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
     width: 60px;
     height: 52px;
@@ -299,8 +299,8 @@ html, body {
 
 .shape.rectangle {
     border-radius: 10px;
-    border-color: rgba(56, 189, 248, 0.45);
-    filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.4));
+    border-color: rgba(168, 85, 247, 0.45);
+    filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.4));
     width: 40px;
     height: 70px;
 }
