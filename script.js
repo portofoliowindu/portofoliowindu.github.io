@@ -359,6 +359,62 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 9. Timeline Detail Modal Handler
     const timelineData = {
+        "12": {
+            period: "Rabu & Kamis, 26 & 27 Agustus 2026",
+            title: "Bimtek Konten Digital \"Literasi Kesehatan Dan Numerasi\"",
+            institution: "Dinas Pendidikan Dan Kebudayaan (Gedung Dwija Hayu)",
+            badges: [
+                { text: "Literasi Kesehatan & Numerasi", icon: "fas fa-heartbeat", color: "bg-rose-500/10 text-rose-400 border border-rose-500/20" },
+                { text: "Gedung Dwija Hayu", icon: "fas fa-building", color: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" },
+                { text: "84 Peserta Pendidik", icon: "fas fa-users", color: "bg-amber-500/10 text-amber-400 border border-amber-500/20" }
+            ],
+            overview: "Pelaksanaan Bimbingan Teknis (Bimtek) Pembuatan Konten Digital dengan fokus materi \"Literasi Kesehatan Dan Numerasi\" yang diselenggarakan oleh Dinas Pendidikan Dan Kebudayaan di Gedung Dwija Hayu. Kegiatan 2 hari ini membekali 84 orang peserta pendidik dengan strategi pembuatan konten digital interaktif yang mengintegrasikan aspek kesehatan dan numerasi siswa.",
+            highlights: [
+                "<strong>Hari / Tanggal Pelaksanaan:</strong> Rabu & Kamis, 26 & 27 Agustus 2026",
+                "<strong>Waktu Pembukaan:</strong> Pukul 08.00 WIB s.d. Selesai",
+                "<strong>Tempat / Lokasi Kegiatan:</strong> Dinas Pendidikan Dan Kebudayaan \"Gedung Dwija Hayu\"",
+                "<strong>Jumlah Peserta:</strong> 84 Orang Pendidik & Tenaga Kependidikan",
+                "<strong>Materi Utama & Hasil Karya:</strong> Praktik pembuatan dan pengembangan konten pembelajaran digital bertema Literasi Kesehatan serta integrasi penguatan Numerasi di sekolah."
+            ],
+            photos: [
+                { url: "https://drive.google.com/file/d/13_qwwp0f_YTkTMGHBP409qm6Y3pOMgE-/view?usp=sharing", caption: "Dokumentasi Pembukaan Bimtek Konten Digital Literasi Kesehatan & Numerasi — 26 & 27 Agustus 2026" },
+                { url: "https://drive.google.com/file/d/14SgIi_MPV9cEzTRFnH0Lp8UNBczoORFw/view?usp=sharing", caption: "Dokumentasi Pemaparan Materi Konten Digital di Gedung Dwija Hayu Dinas Pendidikan" },
+                { url: "https://drive.google.com/file/d/16hZFSSmT_pMwAKvdU_pDAHLK3EVHRLcm/view?usp=sharing", caption: "Dokumentasi Antusiasme 84 Peserta Pendidik & Tendik se-Kabupaten" },
+                { url: "https://drive.google.com/file/d/17DL8WH9kIaP_mRK0LXMSP4InIT8oQUjT/view?usp=sharing", caption: "Dokumentasi Sesi Praktik Pembuatan Media Pembelajaran Digital Kesehatan" },
+                { url: "https://drive.google.com/file/d/17IpW2wweWjtCuF58ieM8yzEfH1ORWG3q/view?usp=sharing", caption: "Dokumentasi Pembimbingan Teknis Integrasi Modul Numerasi Digital" },
+                { url: "https://drive.google.com/file/d/18409abyhhYYCSdnaIZKpu3yM3N7UlZsN/view?usp=sharing", caption: "Dokumentasi Suasana Sesi Pelatihan di Gedung Dwija Hayu" },
+                { url: "https://drive.google.com/file/d/19PHzOojfXLlTe3OD2NHAOVdJdMv1A_e3/view?usp=sharing", caption: "Dokumentasi Diskusi Kelompok Penyusunan Konten Digital Interaktif" },
+                { url: "https://drive.google.com/file/d/1Bj-KSGURDhUGNOf-3yYztJ4ONIHtbIA5/view?usp=sharing", caption: "Dokumentasi Demonstrasi Fitur Media Pembelajaran Numerasi Sekolah" },
+                { url: "https://drive.google.com/file/d/1Brw-zeXFj-gnYYDR1NvLNdMOc6dumw3M/view?usp=sharing", caption: "Dokumentasi Konsultasi Teknis & Pembimbingan Praktis Peserta Bimtek" },
+                { url: "https://drive.google.com/file/d/1EmDHhbBKmB5q2aiUwJ1ui-1pZ77PFKJE/view?usp=sharing", caption: "Dokumentasi Presentasi Hasil Karya Konten Digital Literasi Kesehatan" },
+                { url: "https://drive.google.com/file/d/1MprT25Rd9N3Mp0wDSYFUJ49wDiLZkPww/view?usp=sharing", caption: "Dokumentasi Review & Evaluasi Karya Konten Digital Peserta" },
+                { url: "https://drive.google.com/file/d/1Mw85vg9XGXOf-y9GMSU-DMfUvU1vafoZ/view?usp=sharing", caption: "Dokumentasi Sesi Pembukaan Pukul 08.00 WIB Gedung Dwija Hayu" },
+                { url: "https://drive.google.com/file/d/1NIbQxpBKefVU9kLBL-bnh33DZ3lLjh7l/view?usp=sharing", caption: "Dokumentasi Pembimbingan Aplikasi AI & Multimedia Pembelajaran" },
+                { url: "https://drive.google.com/file/d/1NiBTaJkNgDs4ZIPE1K0HHGd-zZr7vWT9/view?usp=sharing", caption: "Dokumentasi Simulasi Pembelajaran Digital Literasi Kesehatan & Numerasi" },
+                { url: "https://drive.google.com/file/d/1P9SRk9vKx6kPonKoxkeuRIjQghCttSTy/view?usp=sharing", caption: "Dokumentasi Foto Bersama 84 Peserta Bimtek Gedung Dwija Hayu" },
+                { url: "https://drive.google.com/file/d/1PRP9GiFWD9b1y8I2wSJdB0uXyXkuG3w9/view?usp=sharing", caption: "Dokumentasi Sesi Tanya Jawab & Solusi Tantangan Pembelajaran Digital" },
+                { url: "https://drive.google.com/file/d/1QK_MqtjfhZVV0a4-DCkOyMWDMpc2ndh4/view?usp=sharing", caption: "Dokumentasi Eksplorasi Tools Pembuatan Media Ajar Numerasi" },
+                { url: "https://drive.google.com/file/d/1QQMB3i8wyXFVeIw-w24bRI5fKB1VliBr/view?usp=sharing", caption: "Dokumentasi Aksi Praktik Baik Konten Digital Dinas Pendidikan" },
+                { url: "https://drive.google.com/file/d/1QbBLYA6QgNQzPGjLRBH_IRVkjCZC_P5x/view?usp=sharing", caption: "Dokumentasi Pendampingan Layout Visual & Grafis Media Pembelajaran" },
+                { url: "https://drive.google.com/file/d/1TKvzIBbF17B4nSdJB6wi36wdS9I4q-b8/view?usp=sharing", caption: "Dokumentasi Pengarahan Teknis Pembuka Hari Ke-2 Pelatihan" },
+                { url: "https://drive.google.com/file/d/1TWG-xF4MDZOhlPYTRNCxVnTMuHRqr9Vw/view?usp=sharing", caption: "Dokumentasi Fasilitasi Pelatihan Pembuatan Media Pembelajaran Digital" },
+                { url: "https://drive.google.com/file/d/1TsJK3CJvrlZGhlsaXHVkJwAD9KAzJF-0/view?usp=sharing", caption: "Dokumentasi Sambutan Panitia & Pejabat Dinas Pendidikan Dan Kebudayaan" },
+                { url: "https://drive.google.com/file/d/1Y8MNwNC1oASi0UieE0hHQVSDHyBK55Q3/view?usp=sharing", caption: "Dokumentasi Gelar Hasil Karya Konten Digital Guru Peserta Bimtek" },
+                { url: "https://drive.google.com/file/d/1ZPPbKR2K3_09SLGGgAH_5Pci22yBU3H5/view?usp=sharing", caption: "Dokumentasi Kebersamaan Pendidik & Instruktur Bimtek Konten Digital" },
+                { url: "https://drive.google.com/file/d/1b2QUrj2_3HtQAbhJ3C5VEJBcFLGeek67/view?usp=sharing", caption: "Dokumentasi Penyerahan Sertifikat & Berkas Dokumentasi Kegiatan" },
+                { url: "https://drive.google.com/file/d/1gKNc4ZSNNqUag5AmE8hKXw0qg5OTeIy1/view?usp=sharing", caption: "Dokumentasi Aktivitas Belajar Mandiri Peserta di Gedung Dwija Hayu" },
+                { url: "https://drive.google.com/file/d/1jqwT_SVyeJJY_Px76_VJ36MqJu1Epdkj/view?usp=sharing", caption: "Dokumentasi Sesi Uji Coba Interaktivitas Media Numerasi Digital" },
+                { url: "https://drive.google.com/file/d/1ktYXd4LpCUldPsYltt4Ppfh4wChd6Q18/view?usp=sharing", caption: "Dokumentasi Penguatan Karakter & Literasi Kesehatan Pendidik" },
+                { url: "https://drive.google.com/file/d/1oRCu12CwpfwDEPOpjeNzjBEC6-y0O5NO/view?usp=sharing", caption: "Dokumentasi Pembagian Panduan Praktis Pembuatan Konten Digital" },
+                { url: "https://drive.google.com/file/d/1q6qDcO-YSNJhX1xSWqQcV__Mr7ahm_Il/view?usp=sharing", caption: "Dokumentasi Pendampingan Aplikasi & Animasi Pembelajaran Interaktif" },
+                { url: "https://drive.google.com/file/d/1qd6OhlP0qgCdbkAoT8eEVPkS5a7rjudE/view?usp=sharing", caption: "Dokumentasi Penutupan Sesi Bimtek Konten Digital Hari Ke-2" },
+                { url: "https://drive.google.com/file/d/1sw0uVuUquZMsb2cvdQgkGFW31zRlpb3W/view?usp=sharing", caption: "Dokumentasi Refleksi & Komitmen Implementasi Konten Digital" },
+                { url: "https://drive.google.com/file/d/1xAa-T9oblIh4r65IppisDT_MQsrcrexp/view?usp=sharing", caption: "Dokumentasi Penilaian Hasil Karya Modul Digital Peserta" },
+                { url: "https://drive.google.com/file/d/1zd-56P1udEOoy8SIZsU8vLeXXDka5Fzv/view?usp=sharing", caption: "Dokumentasi Suasana Kebersamaan Panitia & Peserta Bimtek" },
+                { url: "https://drive.google.com/file/d/1zrJc4RSSUdo5WGxeHowvBZYHydjy3d6K/view?usp=sharing", caption: "Dokumentasi Lengkap Bimtek Konten Digital Gedung Dwija Hayu" }
+            ],
+            driveUrl: "https://drive.google.com/drive/u/1/folders/1drtW5v-Jgr3JL28_GoyM5YA0YLW-ajMX"
+        },
         "11": {
             period: "Sabtu, 15 Agustus 2026",
             title: "Bimtek Pelatihan Pembuatan Media Pembelajaran Digital",
