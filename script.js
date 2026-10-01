@@ -229,6 +229,46 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ==========================================================================
+    // GOOGLE APPS SCRIPT ANALYTICS & VISITOR COUNTER CONFIGURATION
+    // Salin URL Web App dari Google Apps Script Anda dan tempel di dalam tanda petik di bawah ini:
+    // Contoh: window.GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx.../exec";
+    // ==========================================================================
+    window.GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzPG5xryR0wYjeHfWuEqD_zm2cu46QyvrLgzx6QBwFjqJroESZW0_d4p6f6vAGDBxY-/exec";
+
+    const trackAnalyticsEvent = (action, eventName) => {
+        if (!window.GAS_WEB_APP_URL || !window.GAS_WEB_APP_URL.startsWith('http')) return;
+        try {
+            const url = new URL(window.GAS_WEB_APP_URL);
+            url.searchParams.set('action', action || 'click');
+            url.searchParams.set('eventName', eventName || 'Interaksi Fitur');
+            url.searchParams.set('userAgent', (navigator.userAgent || 'Unknown Device').substring(0, 100));
+
+            fetch(url.toString(), { mode: 'no-cors' }).catch(() => {});
+        } catch (e) {
+            // Safe silent catch
+        }
+    };
+
+    // Global Click Listener for Feature & Button Analytics
+    document.addEventListener('click', (e) => {
+        const target = e.target.closest('button, a, .timeline-card, [data-timeline-id]');
+        if (!target) return;
+
+        let name = target.getAttribute('aria-label') || target.innerText || target.title || 'Klik Elemen';
+        name = name.replace(/\s+/g, ' ').trim().substring(0, 60);
+
+        if (target.closest('.timeline-card') || target.hasAttribute('data-timeline-id')) {
+            const card = target.closest('.timeline-card') || target;
+            const title = card.querySelector('h4')?.innerText || 'Riwayat Kegiatan';
+            trackAnalyticsEvent('click', `Riwayat: ${title}`);
+        } else if (target.closest('#portfolio')) {
+            trackAnalyticsEvent('click', `Portofolio: ${name}`);
+        } else {
+            trackAnalyticsEvent('click', `Tombol: ${name}`);
+        }
+    });
+
     // 7. Resilient & Persistent Visitor Counter (Harian, Bulanan, Tahunan)
     const initVisitorCounter = () => {
         const namespace = "portofolio_fudak_winduko";
@@ -288,48 +328,93 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('fw_count_year', localYearCount.toString());
         }
 
+        // Cached Spreadsheet Counts Logic
+        const cachedGasToday = localStorage.getItem('fw_gas_today');
+        const cachedGasMonth = localStorage.getItem('fw_gas_month');
+        const cachedGasYear = localStorage.getItem('fw_gas_year');
+
+        let displayDay = cachedGasToday ? parseInt(cachedGasToday, 10) : localDayCount;
+        let displayMonth = cachedGasMonth ? parseInt(cachedGasMonth, 10) : localMonthCount;
+        let displayYear = cachedGasYear ? parseInt(cachedGasYear, 10) : localYearCount;
+
         // DOM Update Helper
         const updateDOM = (day, month, year) => {
             const elDay = document.getElementById('countHarian');
             const elMonth = document.getElementById('countBulanan');
             const elYear = document.getElementById('countTahunan');
-            if (elDay) elDay.innerText = Math.max(1, day).toLocaleString('id-ID');
-            if (elMonth) elMonth.innerText = Math.max(1, month).toLocaleString('id-ID');
-            if (elYear) elYear.innerText = Math.max(1, year).toLocaleString('id-ID');
+            if (elDay) elDay.innerText = typeof day === 'number' ? Math.max(1, day).toLocaleString('id-ID') : String(day);
+            if (elMonth) elMonth.innerText = typeof month === 'number' ? Math.max(1, month).toLocaleString('id-ID') : String(month);
+            if (elYear) elYear.innerText = typeof year === 'number' ? Math.max(1, year).toLocaleString('id-ID') : String(year);
         };
 
-        // Render persistent counts immediately so UI never shows 0!
-        updateDOM(localDayCount, localMonthCount, localYearCount);
+        // If Google Apps Script Web App URL is set, sync with Spreadsheet Analytics!
+        if (window.GAS_WEB_APP_URL && window.GAS_WEB_APP_URL.startsWith('http')) {
+            // Display loading indicator "..." on initial fetch so user knows data is loading from Spreadsheet
+            updateDOM("...", "...", "...");
 
-        // Try syncing with remote Counter API if online
-        const endpointType = hasSessionVisit ? 'get' : 'up';
-        const fetchCount = (key, type) => {
-            const url = `https://api.counterapi.dev/v1/${namespace}/${key}/${type}`;
-            return fetch(url).then(res => {
-                if (!res.ok) throw new Error('Counter API response error');
-                return res.json();
+            const fetchSpreadsheetCount = (isFirstLoad) => {
+                try {
+                    const gasUrl = new URL(window.GAS_WEB_APP_URL);
+                    // If first load of session, record visit; otherwise just get summary
+                    const actionType = (isFirstLoad && !hasSessionVisit) ? 'visit' : 'get_summary';
+                    gasUrl.searchParams.set('action', actionType);
+                    gasUrl.searchParams.set('eventName', 'Kunjungan Halaman Portofolio');
+                    gasUrl.searchParams.set('userAgent', (navigator.userAgent || 'Unknown Device').substring(0, 100));
+
+                    fetch(gasUrl.toString())
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data && data.status === 'success' && typeof data.today === 'number') {
+                                updateDOM(data.today, data.month || 0, data.year || 0);
+                            } else {
+                                updateDOM(localDayCount, localMonthCount, localYearCount);
+                            }
+                        })
+                        .catch(() => {
+                            // Silent fallback to local counts if network fails
+                            updateDOM(localDayCount, localMonthCount, localYearCount);
+                        });
+                } catch (e) {
+                    updateDOM(localDayCount, localMonthCount, localYearCount);
+                }
+            };
+
+            // Fetch on page load
+            fetchSpreadsheetCount(true);
+
+            // Auto-refresh counter every 30 seconds so changes in Spreadsheet update live!
+            setInterval(() => fetchSpreadsheetCount(false), 30000);
+        } else {
+            // Backup fetch to Counter API if online
+            const endpointType = hasSessionVisit ? 'get' : 'up';
+            const fetchCount = (key, type) => {
+                const url = `https://api.counterapi.dev/v1/${namespace}/${key}/${type}`;
+                return fetch(url).then(res => {
+                    if (!res.ok) throw new Error('Counter API response error');
+                    return res.json();
+                });
+            };
+
+            Promise.all([
+                fetchCount(dayKey, endpointType),
+                fetchCount(monthKey, endpointType),
+                fetchCount(yearKey, endpointType)
+            ])
+            .then(([dayData, monthData, yearData]) => {
+                const apiDay = dayData && typeof dayData.count === 'number' ? dayData.count : 0;
+                const apiMonth = monthData && typeof monthData.count === 'number' ? monthData.count : 0;
+                const apiYear = yearData && typeof yearData.count === 'number' ? yearData.count : 0;
+
+                const finalDay = Math.max(localDayCount, apiDay);
+                const finalMonth = Math.max(localMonthCount, apiMonth);
+                const finalYear = Math.max(localYearCount, apiYear);
+
+                updateDOM(finalDay, finalMonth, finalYear);
+            })
+            .catch(() => {
+                // External API fallback: local device accumulation remains active and rendered
             });
-        };
-
-        Promise.all([
-            fetchCount(dayKey, endpointType),
-            fetchCount(monthKey, endpointType),
-            fetchCount(yearKey, endpointType)
-        ])
-        .then(([dayData, monthData, yearData]) => {
-            const apiDay = dayData && typeof dayData.count === 'number' ? dayData.count : 0;
-            const apiMonth = monthData && typeof monthData.count === 'number' ? monthData.count : 0;
-            const apiYear = yearData && typeof yearData.count === 'number' ? yearData.count : 0;
-
-            const finalDay = Math.max(localDayCount, apiDay);
-            const finalMonth = Math.max(localMonthCount, apiMonth);
-            const finalYear = Math.max(localYearCount, apiYear);
-
-            updateDOM(finalDay, finalMonth, finalYear);
-        })
-        .catch(() => {
-            // External API fallback: local device accumulation remains active and rendered
-        });
+        }
     };
 
     initVisitorCounter();
@@ -359,6 +444,274 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 9. Timeline Detail Modal Handler
     const timelineData = {
+        "18": {
+            period: "Rabu, 23 September 2026",
+            title: "Lomba Jagad Inovasi 2026 Propinsi Jawa Timur",
+            institution: "Ruang Pertemuan Depan Dinas Pendidikan Dan Kebudayaan Kab. Madiun",
+            badges: [
+                { text: "Jagad Inovasi Jatim", icon: "fas fa-trophy", color: "bg-purple-500/10 text-purple-400 border border-purple-500/20" },
+                { text: "Dindikbud Kab. Madiun", icon: "fas fa-building", color: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" },
+                { text: "8 Peserta Hadir", icon: "fas fa-users", color: "bg-amber-500/10 text-amber-400 border border-amber-500/20" }
+            ],
+            overview: "Pelaksanaan Ajang Lomba Jagad Inovasi 2026 Tingkat Propinsi Jawa Timur yang bertempat di Ruang Pertemuan Depan Dinas Pendidikan Dan Kebudayaan Kabupaten Madiun. Sesi presentasi dan penilaian inovasi ini berlangsung pada pukul 14.10 hingga 15.30 WIB yang dihadiri oleh 8 orang peserta inovator pilihan.",
+            highlights: [
+                "<strong>Hari / Tanggal Pelaksanaan:</strong> Rabu, 23 September 2026",
+                "<strong>Waktu Pembukaan & Pelaksanaan:</strong> Pukul 14.10 - 15.30 WIB",
+                "<strong>Tempat / Lokasi Kegiatan:</strong> Ruang Pertemuan Depan Dinas Pendidikan Dan Kebudayaan Kab. Madiun",
+                "<strong>Jumlah Peserta Hadir:</strong> 8 Orang Tim Inovator & Penilai",
+                "<strong>Materi Utama & Hasil Karya:</strong> Presentasi karya inovasi pendidikan digital, pemaparan keunggulan karya Jagad Inovasi 2026 Propinsi Jawa Timur, serta sesi verifikasi lapangan."
+            ],
+            photos: [
+                { url: "https://drive.google.com/file/d/123CHOEIGRhy3Tre5iibnRJayd8QG5FmG/view?usp=sharing", caption: "Dokumentasi Pembukaan Lomba Jagad Inovasi 2026 Propinsi Jawa Timur — 23 September 2026" },
+                { url: "https://drive.google.com/file/d/17ek4f8FZB3iBcxZ71EtF1UndB5n0xtfd/view?usp=sharing", caption: "Dokumentasi Presentasi Karya Inovasi di Ruang Pertemuan Dindikbud Kab. Madiun" },
+                { url: "https://drive.google.com/file/d/1918oAkfAFpjgqUii5Xl5CljkFKPaBK4m/view?usp=sharing", caption: "Dokumentasi Pemaparan Keunggulan & Dampak Jagad Inovasi 2026" },
+                { url: "https://drive.google.com/file/d/1A2H4ipqoqD_oW3k8iTtJ_BmI1STPoSnh/view?usp=sharing", caption: "Dokumentasi Sesi Tanya Jawab Dewan Juri Lomba Jagad Inovasi Jatim" },
+                { url: "https://drive.google.com/file/d/1MQYOKk74Qysk43piitKAW3ixmXS8hV8q/view?usp=sharing", caption: "Dokumentasi Demonstrasi Fitur Aplikasi & Karya Digital Inovatif" },
+                { url: "https://drive.google.com/file/d/1OngKQL3R0iaK94XvctcPP7kcHgUJ-bB4/view?usp=sharing", caption: "Dokumentasi Kehadiran 8 Peserta & Tim Penilai Lomba Inovasi" },
+                { url: "https://drive.google.com/file/d/1RYIUZdMSP5TSZhZpBs--Jri__nrbQjJ0/view?usp=sharing", caption: "Dokumentasi Pendampingan & Verifikasi Berkas Inovasi Pendidikan" },
+                { url: "https://drive.google.com/file/d/1WoDv7Xb4KrdWNvjASvI4vEAacDmarJQF/view?usp=sharing", caption: "Dokumentasi Suasana Sesi Presentasi Pukul 14.10 - 15.30 WIB" },
+                { url: "https://drive.google.com/file/d/1YdYp31M4yaQg-y0G9-snPiQyH9D6DAuH/view?usp=sharing", caption: "Dokumentasi Diskusi Strategis Pengembangan Jagad Inovasi Jatim" },
+                { url: "https://drive.google.com/file/d/1ZTEC7BMJN_wwQmYWZ2WT8GZDtzPD5hFu/view?usp=sharing", caption: "Dokumentasi Review Detail Modul & Media Digital Inovatif" },
+                { url: "https://drive.google.com/file/d/1d2B9L22lRX2M7_U-TdclUqvRyLJuUUmb/view?usp=sharing", caption: "Dokumentasi Paparan Rencana Implemetasi Skala Propinsi Jawa Timur" },
+                { url: "https://drive.google.com/file/d/1jmGJfuU0UTUlMnEOMInV69oQ8TNjvlyM/view?usp=sharing", caption: "Dokumentasi Foto Bersama Tim Inovator & Dewan Penilai Dindikbud" },
+                { url: "https://drive.google.com/file/d/1pKRlCcogEKSJ0mmk5Y2A1tYxuUzS6qI8/view?usp=sharing", caption: "Dokumentasi Apresiasi & Testimoni Hasil Karya Jagad Inovasi 2026" },
+                { url: "https://drive.google.com/file/d/1smmGZxbSDY5JtQYenS4xdCQFvHW3lWjj/view?usp=sharing", caption: "Dokumentasi Evaluasi Akhir Sesi Presentasi Lomba Inovasi" },
+                { url: "https://drive.google.com/file/d/1vuCDBjD6MD9rfazrixHXLgt8mAXh0z5R/view?usp=sharing", caption: "Dokumentasi Penutupan Sesi Penilaian Lomba Jagad Inovasi 2026" },
+                { url: "https://drive.google.com/file/d/1z4gkObjkd_OtlaXhIZaAO_st3K2vX6Go/view?usp=sharing", caption: "Dokumentasi Lengkap Lomba Jagad Inovasi 2026 Propinsi Jawa Timur" }
+            ],
+            driveUrl: "https://drive.google.com/drive/folders/1NgBqsaFuN0pOeqtVLYM0pjFFpb1s7dAi"
+        },
+        "17": {
+            period: "Kamis, 17 September 2026",
+            title: "Bimtek Boskinerja Digitalisasi 2026",
+            institution: "SD NEGERI GANDONG 01 Kab. Ngawi",
+            badges: [
+                { text: "Boskinerja Digitalisasi", icon: "fas fa-laptop-code", color: "bg-sky-500/10 text-sky-400 border border-sky-500/20" },
+                { text: "SDN Gandong 01 Ngawi", icon: "fas fa-school", color: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" },
+                { text: "25 Peserta Pendidik", icon: "fas fa-users", color: "bg-amber-500/10 text-amber-400 border border-amber-500/20" }
+            ],
+            overview: "Pelaksanaan Bimbingan Teknis (Bimtek) Boskinerja Digitalisasi 2026 yang bertempat di SD NEGERI GANDONG 01 Kab. Ngawi. Pelatihan ini berlangsung dari pukul 08.00 hingga 16.00 WIB untuk membekali 25 orang peserta pendidik dengan strategi dan tata kelola digitalisasi kinerja sekolah.",
+            highlights: [
+                "<strong>Hari / Tanggal Pelaksanaan:</strong> Kamis, 17 September 2026",
+                "<strong>Waktu Pelaksanaan:</strong> Pukul 08.00 - 16.00 WIB",
+                "<strong>Tempat / Lokasi Kegiatan:</strong> SD NEGERI GANDONG 01 Kab. Ngawi",
+                "<strong>Jumlah Peserta:</strong> 25 Orang Pendidik & Tenaga Kependidikan",
+                "<strong>Materi Utama & Hasil Karya:</strong> Pendampingan teknis implementasi Boskinerja Digitalisasi 2026, tata kelola data kinerja, serta integrasi platform digital."
+            ],
+            photos: [
+                { url: "https://drive.google.com/file/d/10y5qpL95CDTKpclmWTD2_ftgiBQDjym4/view?usp=sharing", caption: "Dokumentasi Pembukaan Bimtek Boskinerja Digitalisasi 2026 SD NEGERI GANDONG 01 — 17 September 2026" },
+                { url: "https://drive.google.com/file/d/118g6A636vCSoaL6cKi65OWCny-GiNpW3/view?usp=sharing", caption: "Dokumentasi Pemaparan Materi Boskinerja Digitalisasi 2026" },
+                { url: "https://drive.google.com/file/d/13DeurTe65ImP1Kt1yGJtDaV0r3fO13X_/view?usp=sharing", caption: "Dokumentasi Kehadiran & Antusiasme 25 Peserta Pendidik SDN Gandong 01" },
+                { url: "https://drive.google.com/file/d/142oQCcooCTARYYj3A4RU8tcGHHyPviBf/view?usp=sharing", caption: "Dokumentasi Sesi Praktik Tata Kelola Platform Digitalisasi Kinerja" },
+                { url: "https://drive.google.com/file/d/16MEpKC2iqDYzfhQfCDaEsSVYkhWv-3Fq/view?usp=sharing", caption: "Dokumentasi Pendampingan Teknis Aplikasi Boskinerja Digital" },
+                { url: "https://drive.google.com/file/d/1AsBpqPvXCsLbZjUPTdarBrd2lf5-peOO/view?usp=sharing", caption: "Dokumentasi Suasana Pelatihan Pendidik di SDN Gandong 01" },
+                { url: "https://drive.google.com/file/d/1EjetAimGxZ11B7JbpB-iuX3_TaPInWoI/view?usp=sharing", caption: "Dokumentasi Diskusi Kelompok Implemetasi Sistem Digitalisasi" },
+                { url: "https://drive.google.com/file/d/1IiWfKO8BsjmMScOzEekESmU85f1zDupC/view?usp=sharing", caption: "Dokumentasi Demonstrasi Fitur Boskinerja Digitalisasi 2026" },
+                { url: "https://drive.google.com/file/d/1L-3TM6RCaBHe0u3LmAz-jjzLzbVf-Zqk/view?usp=sharing", caption: "Dokumentasi Konsultasi Teknis & Bimbingan Praktis Peserta" },
+                { url: "https://drive.google.com/file/d/1L2bnOmILuoS7nbbghE8DVlZRbWGdeCAX/view?usp=sharing", caption: "Dokumentasi Presentasi Hasil Praktik Kinerja Digital Guru" },
+                { url: "https://drive.google.com/file/d/1MH8faWB12OQ8gF3TI7lcko8kGia4Lyit/view?usp=sharing", caption: "Dokumentasi Review & Evaluasi Implementasi Boskinerja Digital" },
+                { url: "https://drive.google.com/file/d/1TzHWqnF92U6ZD_X5BHkflvoxsPBwkKpt/view?usp=sharing", caption: "Dokumentasi Sesi Pembukaan Pukul 08.00 WIB SDN Gandong 01" },
+                { url: "https://drive.google.com/file/d/1YkMnvi0-OfT44lByd6J4I16eBKqRIa8q/view?usp=sharing", caption: "Dokumentasi Pembimbingan Integrasi Sistem Data Kinerja Sekolah" },
+                { url: "https://drive.google.com/file/d/1Z_5ZDqlvUq70R3esPGO2izXmre6UByvH/view?usp=sharing", caption: "Dokumentasi Simulasi Penggunaan Platform Boskinerja 2026" },
+                { url: "https://drive.google.com/file/d/1aNs8fqDr0ZuVGL3MAQpp3Ih-PW2_9KZS/view?usp=sharing", caption: "Dokumentasi Foto Bersama 25 Peserta Bimtek SDN Gandong 01" },
+                { url: "https://drive.google.com/file/d/1ccpnPXDZvDp6k9AynAwJPhyk576cVgxT/view?usp=sharing", caption: "Dokumentasi Sesi Tanya Jawab & Solusi Kendala Digitalisasi Kinerja" },
+                { url: "https://drive.google.com/file/d/1dKnN2KA2HRE5QxxgiU6-LwFEwAcRdiyC/view?usp=sharing", caption: "Dokumentasi Eksplorasi Fitur & Sistem Pengelolaan Data Digital" },
+                { url: "https://drive.google.com/file/d/1g4puZfPvy8S2Hm7jsz4dVpv0BDuKMXiy/view?usp=sharing", caption: "Dokumentasi Aksi Praktik Baik Digitalisasi SDN Gandong 01" },
+                { url: "https://drive.google.com/file/d/1r8me-AL8JQ9L6rctawv1H_WpxQ8Ik8EV/view?usp=sharing", caption: "Dokumentasi Pendampingan Input Data Kinerja Pendidik" },
+                { url: "https://drive.google.com/file/d/1rE0Jw0fhkUqYYoYEf9iZsge_Ubassdl-/view?usp=sharing", caption: "Dokumentasi Komitmen Peningkatan Mutu Digitalisasi Kinerja" },
+                { url: "https://drive.google.com/file/d/1wIxWuIZnj_5aUbr4rlorxCeFjjM4_cRP/view?usp=sharing", caption: "Dokumentasi Refleksi & Penutupan Bimtek Pukul 16.00 WIB" },
+                { url: "https://drive.google.com/file/d/1x7VkOnuUkPmFOCYZaGmObSoQNWDh3QB-/view?usp=sharing", caption: "Dokumentasi Penyerahan Sertifikat Pelatihan Peserta" },
+                { url: "https://drive.google.com/file/d/1xEFRl6dFYB2Kdx0SbAnJHpbQb-C6_UYR/view?usp=sharing", caption: "Dokumentasi Kebersamaan Pendidik SDN Gandong 01 Kab. Ngawi" },
+                { url: "https://drive.google.com/file/d/1xukPR_8lvJdqh2DkdYbNvBh0zdv4HYAR/view?usp=sharing", caption: "Dokumentasi Lengkap Bimtek Boskinerja Digitalisasi 2026 SDN Gandong 01" }
+            ],
+            driveUrl: "https://drive.google.com/drive/folders/1lhI8iX9QE5j-JDoBJOldT2CW1OS8zqX-"
+        },
+        "16": {
+            period: "Rabu, 16 September 2026",
+            title: "Bimtek Boskinerja Digitalisasi 2026",
+            institution: "KB RA KARTINI Kab. Ngawi",
+            badges: [
+                { text: "Boskinerja Digitalisasi", icon: "fas fa-laptop-code", color: "bg-sky-500/10 text-sky-400 border border-sky-500/20" },
+                { text: "KB RA KARTINI Ngawi", icon: "fas fa-school", color: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" },
+                { text: "15 Peserta Pendidik", icon: "fas fa-users", color: "bg-amber-500/10 text-amber-400 border border-amber-500/20" }
+            ],
+            overview: "Pelaksanaan Bimbingan Teknis (Bimtek) Boskinerja Digitalisasi 2026 yang bertempat di KB RA KARTINI Kab. Ngawi. Pelatihan ini berlangsung dari pukul 08.00 hingga 16.00 WIB untuk membekali 15 orang peserta pendidik dengan strategi dan tata kelola digitalisasi kinerja sekolah.",
+            highlights: [
+                "<strong>Hari / Tanggal Pelaksanaan:</strong> Rabu, 16 September 2026",
+                "<strong>Waktu Pelaksanaan:</strong> Pukul 08.00 - 16.00 WIB",
+                "<strong>Tempat / Lokasi Kegiatan:</strong> KB RA KARTINI Kab. Ngawi",
+                "<strong>Jumlah Peserta:</strong> 15 Orang Pendidik & Tenaga Kependidikan",
+                "<strong>Materi Utama & Hasil Karya:</strong> Pendampingan teknis implementasi Boskinerja Digitalisasi 2026, tata kelola data kinerja, serta integrasi platform digital."
+            ],
+            photos: [
+                { url: "https://drive.google.com/file/d/11KkU2KaFREVM6YpVL-ojO-ICnAT9hXBb/view?usp=sharing", caption: "Dokumentasi Pembukaan Bimtek Boskinerja Digitalisasi 2026 KB RA KARTINI Kab. Ngawi — 16 September 2026" },
+                { url: "https://drive.google.com/file/d/12iIH3iX2uu4MNyl2Fd1oiYDyCN0RiUOp/view?usp=sharing", caption: "Dokumentasi Pemaparan Materi Boskinerja Digitalisasi 2026" },
+                { url: "https://drive.google.com/file/d/15X_ocWuRu7k4WZ8Em4QH7kx8C5nk-JGY/view?usp=sharing", caption: "Dokumentasi Kehadiran & Antusiasme 15 Peserta Pendidik KB RA KARTINI Ngawi" },
+                { url: "https://drive.google.com/file/d/1AayVAAuOslJn5bPkNREcR3cx8glXmhv4/view?usp=sharing", caption: "Dokumentasi Sesi Praktik Tata Kelola Platform Digitalisasi Kinerja" },
+                { url: "https://drive.google.com/file/d/1BB7e4fgqm0sJ1511N5rN60scP83aV_Nd/view?usp=sharing", caption: "Dokumentasi Pendampingan Teknis Aplikasi Boskinerja Digital" },
+                { url: "https://drive.google.com/file/d/1BCpVude-hwCuh3gKq5tcUuTPOLX4UbJm/view?usp=sharing", caption: "Dokumentasi Suasana Pelatihan Pendidik di KB RA KARTINI" },
+                { url: "https://drive.google.com/file/d/1FRnzgoMM4D_uqUHXKNxxVobAooc3F6B8/view?usp=sharing", caption: "Dokumentasi Diskusi Kelompok Implemetasi Sistem Digitalisasi" },
+                { url: "https://drive.google.com/file/d/1IDczg4T6ipZxSzwpIDexyDtsGAR2JnX9/view?usp=sharing", caption: "Dokumentasi Demonstrasi Fitur Boskinerja Digitalisasi 2026" },
+                { url: "https://drive.google.com/file/d/1N7R37600v0IF53uiCMQ6sO05Xh03XY7S/view?usp=sharing", caption: "Dokumentasi Konsultasi Teknis & Bimbingan Praktis Peserta" },
+                { url: "https://drive.google.com/file/d/1PxcTdy9NBo083ZRYvP3savumynu36guM/view?usp=sharing", caption: "Dokumentasi Presentasi Hasil Praktik Kinerja Digital Guru" },
+                { url: "https://drive.google.com/file/d/1S4cmjZtvuL8He-5G-bo8akVost1e7KzX/view?usp=sharing", caption: "Dokumentasi Review & Evaluasi Implementasi Boskinerja Digital" },
+                { url: "https://drive.google.com/file/d/1TT8BEwhLAOKTPRZ7RSK3vEgVUxAlOYDA/view?usp=sharing", caption: "Dokumentasi Sesi Pembukaan Pukul 08.00 WIB KB RA KARTINI Ngawi" },
+                { url: "https://drive.google.com/file/d/1XiCDgbkPCKSHNkiOAh0_Vw4G3wS0NiB2/view?usp=sharing", caption: "Dokumentasi Pembimbingan Integrasi Sistem Data Kinerja Sekolah" },
+                { url: "https://drive.google.com/file/d/1Z2KfygjkpNRX1Ot-2bcAKN-GKAEpA1gZ/view?usp=sharing", caption: "Dokumentasi Simulasi Penggunaan Platform Boskinerja 2026" },
+                { url: "https://drive.google.com/file/d/1ZKmgfKTo0Aq5gZZZMlzH75tH0TF7Enz5/view?usp=sharing", caption: "Dokumentasi Foto Bersama 15 Peserta Bimtek KB RA KARTINI Ngawi" },
+                { url: "https://drive.google.com/file/d/1_fitZOqKu6C3CAsgvRgVkEFMXUdXQ5IO/view?usp=sharing", caption: "Dokumentasi Sesi Tanya Jawab & Solusi Kendala Digitalisasi Kinerja" },
+                { url: "https://drive.google.com/file/d/1bMJMhWWqlep6aho4f8Y1vSvPI531reRg/view?usp=sharing", caption: "Dokumentasi Eksplorasi Fitur & Sistem Pengelolaan Data Digital" },
+                { url: "https://drive.google.com/file/d/1bs6OEBQil_TdLMZwI9iJKTmNvZUs6WRD/view?usp=sharing", caption: "Dokumentasi Aksi Praktik Baik Digitalisasi KB RA KARTINI Ngawi" },
+                { url: "https://drive.google.com/file/d/1eQ9SaSHGYHnFOBTfUAOKUTzH_JhO0YIy/view?usp=sharing", caption: "Dokumentasi Pendampingan Input Data Kinerja Pendidik" },
+                { url: "https://drive.google.com/file/d/1gbWYhNJkaTtsV9VaN_XNT3bzpyazFu0u/view?usp=sharing", caption: "Dokumentasi Komitmen Peningkatan Mutu Digitalisasi Kinerja" },
+                { url: "https://drive.google.com/file/d/1gwFf64rwofGFs6FmxOVFZD5rCvxhn8qW/view?usp=sharing", caption: "Dokumentasi Refleksi & Penutupan Bimtek Pukul 16.00 WIB" },
+                { url: "https://drive.google.com/file/d/1pOiMwtCUsQuN9Mfz-TGX1tJsLpCjiYZX/view?usp=sharing", caption: "Dokumentasi Penyerahan Sertifikat Pelatihan Peserta" },
+                { url: "https://drive.google.com/file/d/1pp3P4dI8T_2md1_ztlpT5JBU6sd5ztGc/view?usp=sharing", caption: "Dokumentasi Kebersamaan Pendidik KB RA KARTINI Kab. Ngawi" },
+                { url: "https://drive.google.com/file/d/1tV2eFc5BYKJ2AL7xKh2w6hlLQ37WAZw3/view?usp=sharing", caption: "Dokumentasi Evaluasi Hasil Praktik Digitalisasi Sekolah" },
+                { url: "https://drive.google.com/file/d/1zpQN8dnCn70qpbI1Kney49DJPMVFrmdP/view?usp=sharing", caption: "Dokumentasi Lengkap Bimtek Boskinerja Digitalisasi 2026 KB RA KARTINI Ngawi" }
+            ],
+            driveUrl: "https://drive.google.com/drive/u/0/folders/1iGntOAaEjZj6H26yuWbRJA9JNzgo1_2u"
+        },
+        "15": {
+            period: "Sabtu, 5 September 2026",
+            title: "Bimtek Boskinerja Digitalisasi 2026",
+            institution: "UPT Korwil Kecamatan Madiun (SDN Kare 02)",
+            badges: [
+                { text: "Boskinerja Digitalisasi", icon: "fas fa-laptop-code", color: "bg-sky-500/10 text-sky-400 border border-sky-500/20" },
+                { text: "UPT Korwil / SDN Kare 02", icon: "fas fa-building-columns", color: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" },
+                { text: "50 Peserta Pendidik", icon: "fas fa-users", color: "bg-amber-500/10 text-amber-400 border border-amber-500/20" }
+            ],
+            overview: "Pelaksanaan Bimbingan Teknis (Bimtek) Boskinerja Digitalisasi 2026 yang bertempat di UPT Korwil Kecamatan Madiun (SDN Kare 02). Pelatihan ini berlangsung dari pukul 08.00 hingga 16.00 WIB untuk membekali 50 orang peserta pendidik dengan strategi dan tata kelola digitalisasi kinerja sekolah.",
+            highlights: [
+                "<strong>Hari / Tanggal Pelaksanaan:</strong> Sabtu, 5 September 2026",
+                "<strong>Waktu Pelaksanaan:</strong> Pukul 08.00 - 16.00 WIB",
+                "<strong>Tempat / Lokasi Kegiatan:</strong> UPT KORWIL KECAMATAN MADIUN (SDN Kare 02)",
+                "<strong>Jumlah Peserta:</strong> 50 Orang Pendidik & Tenaga Kependidikan",
+                "<strong>Materi Utama & Hasil Karya:</strong> Pendampingan teknis implementasi Boskinerja Digitalisasi 2026, tata kelola data kinerja, serta integrasi platform digital."
+            ],
+            photos: [
+                { url: "https://drive.google.com/file/d/1-g9jYICfOByV0KA0Xgi5IC0QyHnnedTb/view?usp=sharing", caption: "Dokumentasi Pembukaan Bimtek Boskinerja Digitalisasi 2026 UPT Korwil / SDN Kare 02 — 5 September 2026" },
+                { url: "https://drive.google.com/file/d/13iaB8FVMkqRzJ1ZrNFa_dgypNjDvewhD/view?usp=sharing", caption: "Dokumentasi Pemaparan Materi Boskinerja Digitalisasi 2026" },
+                { url: "https://drive.google.com/file/d/14-F7NqfF80Tde2BcByZdgxLjAlWBmD6d/view?usp=sharing", caption: "Dokumentasi Kehadiran & Antusiasme 50 Peserta Pendidik UPT Korwil" },
+                { url: "https://drive.google.com/file/d/18PRdfg2DMZWZoJYMSXTamHy1arNdTZXq/view?usp=sharing", caption: "Dokumentasi Sesi Praktik Tata Kelola Platform Digitalisasi Kinerja" },
+                { url: "https://drive.google.com/file/d/1Af2oJdtRSU9OmPEG-oL83tLPCaF8-Pdm/view?usp=sharing", caption: "Dokumentasi Pendampingan Teknis Aplikasi Boskinerja Digital" },
+                { url: "https://drive.google.com/file/d/1AkIg9ku4PUY1B_UGLDQ1x4_TRmeW695I/view?usp=sharing", caption: "Dokumentasi Suasana Pelatihan Pendidik di SDN Kare 02" },
+                { url: "https://drive.google.com/file/d/1Dua4gXOQdzLvArVbG8vtDksB3KBjUP5J/view?usp=sharing", caption: "Dokumentasi Diskusi Kelompok Implemetasi Sistem Digitalisasi" },
+                { url: "https://drive.google.com/file/d/1EBib-783N4MxnODBDFF4fzz_jnQw-Fzh/view?usp=sharing", caption: "Dokumentasi Demonstrasi Fitur Boskinerja Digitalisasi 2026" },
+                { url: "https://drive.google.com/file/d/1JzxiUHS7qrtk3FWSa6_eoA1x3MxtalOY/view?usp=sharing", caption: "Dokumentasi Konsultasi Teknis & Bimbingan Praktis Peserta" },
+                { url: "https://drive.google.com/file/d/1N98g6C2eRq7K9aVaoEMaxAku1O33-BJI/view?usp=sharing", caption: "Dokumentasi Presentasi Hasil Praktik Kinerja Digital Guru" },
+                { url: "https://drive.google.com/file/d/1O-1hUfO5cUcmBOqktQknDTJ84F4xDlEF/view?usp=sharing", caption: "Dokumentasi Review & Evaluasi Implementasi Boskinerja Digital" },
+                { url: "https://drive.google.com/file/d/1PPnj1BG4aj7fkzGSdWu6S9_dKVSbY6S7/view?usp=sharing", caption: "Dokumentasi Sesi Pembukaan Pukul 08.00 WIB UPT Korwil Madiun" },
+                { url: "https://drive.google.com/file/d/1UG35_aapAs13TjMm_lpPpSQWDyxDYzuH/view?usp=sharing", caption: "Dokumentasi Pembimbingan Integrasi Sistem Data Kinerja Sekolah" },
+                { url: "https://drive.google.com/file/d/1g3ig2HNlnZGusjpRk3Xl6xVxNQq8xL0o/view?usp=sharing", caption: "Dokumentasi Simulasi Penggunaan Platform Boskinerja 2026" },
+                { url: "https://drive.google.com/file/d/1hThb8YTtbHQmvi15VlWZVn2IkRg6p8FL/view?usp=sharing", caption: "Dokumentasi Foto Bersama 50 Peserta Bimtek SDN Kare 02" },
+                { url: "https://drive.google.com/file/d/1pk-p8WpStD6N5dsh7Tnes3Ocnk3L844G/view?usp=sharing", caption: "Dokumentasi Sesi Tanya Jawab & Solusi Kendala Digitalisasi Kinerja" },
+                { url: "https://drive.google.com/file/d/1qpOoWVyvaODfvvnAk3UG1yFpMnwmFHFb/view?usp=sharing", caption: "Dokumentasi Eksplorasi Fitur & Sistem Pengelolaan Data Digital" },
+                { url: "https://drive.google.com/file/d/1uDgiQVN0U0Wcu2arEgs5Rj8i94J1SG35/view?usp=sharing", caption: "Dokumentasi Aksi Praktik Baik Digitalisasi UPT Korwil Madiun" },
+                { url: "https://drive.google.com/file/d/1vKoJVkVjT6UWNOZnKN2FgmVfjTCU2Ehq/view?usp=sharing", caption: "Dokumentasi Pendampingan Input Data Kinerja Pendidik" },
+                { url: "https://drive.google.com/file/d/1vUqan2nThvQchGkG2hhefmjj_yGW9oQ8/view?usp=sharing", caption: "Dokumentasi Komitmen Peningkatan Mutu Digitalisasi Kinerja" },
+                { url: "https://drive.google.com/file/d/1wL-cHlxSxmZ3rzDqHdwtmz-7y3REEFgv/view?usp=sharing", caption: "Dokumentasi Refleksi & Penutupan Bimtek Pukul 16.00 WIB" },
+                { url: "https://drive.google.com/file/d/1yRzh0rZD4uPklGWxhoYv_K9iGPjkxv80/view?usp=sharing", caption: "Dokumentasi Lengkap Bimtek Boskinerja Digitalisasi 2026 SDN Kare 02" }
+            ],
+            driveUrl: "https://drive.google.com/drive/folders/1GB6FxMvwMb_mJeIINfLlKGBvprSgxt4c"
+        },
+        "14": {
+            period: "Jumat, 4 September 2026",
+            title: "Bimtek Boskinerja Digitalisasi 2026",
+            institution: "SMKN 1 Wonoasri",
+            badges: [
+                { text: "Boskinerja Digitalisasi", icon: "fas fa-laptop-code", color: "bg-sky-500/10 text-sky-400 border border-sky-500/20" },
+                { text: "SMKN 1 Wonoasri", icon: "fas fa-school", color: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" },
+                { text: "36 Peserta Pendidik", icon: "fas fa-users", color: "bg-amber-500/10 text-amber-400 border border-amber-500/20" }
+            ],
+            overview: "Pelaksanaan Bimbingan Teknis (Bimtek) Boskinerja Digitalisasi 2026 yang bertempat di SMKN 1 Wonoasri. Pelatihan ini berlangsung dari pukul 08.00 hingga 16.00 WIB untuk membekali 36 orang peserta pendidik dengan strategi dan tata kelola digitalisasi kinerja sekolah.",
+            highlights: [
+                "<strong>Hari / Tanggal Pelaksanaan:</strong> Jumat, 4 September 2026",
+                "<strong>Waktu Pelaksanaan:</strong> Pukul 08.00 - 16.00 WIB",
+                "<strong>Tempat / Lokasi Kegiatan:</strong> SMKN 1 Wonoasri",
+                "<strong>Jumlah Peserta:</strong> 36 Orang Pendidik & Tenaga Kependidikan",
+                "<strong>Materi Utama & Hasil Karya:</strong> Pendampingan teknis implementasi Boskinerja Digitalisasi 2026, tata kelola data kinerja, serta integrasi platform digital."
+            ],
+            photos: [
+                { url: "https://drive.google.com/file/d/13fGPnDAzYQLb-anqBDxq5n8x8LoWWetc/view?usp=sharing", caption: "Dokumentasi Pembukaan Bimtek Boskinerja Digitalisasi 2026 di SMKN 1 Wonoasri — 4 September 2026" },
+                { url: "https://drive.google.com/file/d/14WcnSMv6wpQaWh8tECy8CEUkDEVxFNWj/view?usp=sharing", caption: "Dokumentasi Pemaparan Materi Boskinerja Digitalisasi 2026" },
+                { url: "https://drive.google.com/file/d/1DTCs_CKBKsbu4vdkptb8RDhsnawM5jxb/view?usp=sharing", caption: "Dokumentasi Kehadiran & Antusiasme 36 Peserta Pendidik SMKN 1 Wonoasri" },
+                { url: "https://drive.google.com/file/d/1DiYoZoVIJL3ce0HP15hlP8DBefsV2-np/view?usp=sharing", caption: "Dokumentasi Sesi Praktik Tata Kelola Platform Digitalisasi Kinerja" },
+                { url: "https://drive.google.com/file/d/1K4fp8MEepWjg6yyg3fIWbSS9llEF0n5U/view?usp=sharing", caption: "Dokumentasi Pendampingan Teknis Aplikasi Boskinerja Digital" },
+                { url: "https://drive.google.com/file/d/1KVT8ekrXhBy6rbwuflor-wjtuYGWUxxz/view?usp=sharing", caption: "Dokumentasi Suasana Pelatihan Pendidik di SMKN 1 Wonoasri" },
+                { url: "https://drive.google.com/file/d/1MyguuGbvttCuhAJyIDnmzQHuLwQE-rFJ/view?usp=sharing", caption: "Dokumentasi Diskusi Kelompok Implemetasi Sistem Digitalisasi" },
+                { url: "https://drive.google.com/file/d/1NTM_f2yO4Uj5CnV44lKuCG_BdFIymoyD/view?usp=sharing", caption: "Dokumentasi Demonstrasi Fitur Boskinerja Digitalisasi 2026" },
+                { url: "https://drive.google.com/file/d/1NsQUNjPp-vF4upIMePuKH0Hgm08t9BL8/view?usp=sharing", caption: "Dokumentasi Konsultasi Teknis & Bimbingan Praktis Peserta" },
+                { url: "https://drive.google.com/file/d/1OwqAY6Jln1IppbWVIb-sIZfZ6ruN014p/view?usp=sharing", caption: "Dokumentasi Presentasi Hasil Praktik Kinerja Digital Guru" },
+                { url: "https://drive.google.com/file/d/1Qc-xw5JT1sGhSy8m21HcF6U0N5mzMO6F/view?usp=sharing", caption: "Dokumentasi Review & Evaluasi Implementasi Boskinerja Digital" },
+                { url: "https://drive.google.com/file/d/1UUFVqcCM1Etvyr8S9G3ZPRDVu4njjCmq/view?usp=sharing", caption: "Dokumentasi Sesi Pembukaan Pukul 08.00 WIB SMKN 1 Wonoasri" },
+                { url: "https://drive.google.com/file/d/1X4weXYmrkjq95ZbOPTI7V5oCU-JxVCVs/view?usp=sharing", caption: "Dokumentasi Pembimbingan Integrasi Sistem Data Kinerja Sekolah" },
+                { url: "https://drive.google.com/file/d/1jcjX6EMlc5KVR01Hj6l2grlnmcZ76EkU/view?usp=sharing", caption: "Dokumentasi Simulasi Penggunaan Platform Boskinerja 2026" },
+                { url: "https://drive.google.com/file/d/1jjYm44onBXw-Gnq1N216pqu2tq570VLZ/view?usp=sharing", caption: "Dokumentasi Foto Bersama 36 Peserta Bimtek SMKN 1 Wonoasri" },
+                { url: "https://drive.google.com/file/d/1lVevijJUhTJViEpoOelxj0xuOBeeJ3RM/view?usp=sharing", caption: "Dokumentasi Sesi Tanya Jawab & Solusi Kendala Digitalisasi Kinerja" },
+                { url: "https://drive.google.com/file/d/1pFYzZThrzAnyPbP7MhlG0uN3Nv-xIFGX/view?usp=sharing", caption: "Dokumentasi Eksplorasi Fitur & Sistem Pengelolaan Data Digital" },
+                { url: "https://drive.google.com/file/d/1pG87ZoDYDW1kfzFou9tRhogD7QFxnV9j/view?usp=sharing", caption: "Dokumentasi Aksi Praktik Baik Digitalisasi SMKN 1 Wonoasri" },
+                { url: "https://drive.google.com/file/d/1qSQ-1hgKfjYZgajrJc3khMCPRUldv9Am/view?usp=sharing", caption: "Dokumentasi Pendampingan Input Data Kinerja Pendidik" },
+                { url: "https://drive.google.com/file/d/1t9xhq8gOde2qZlMYqVbJ9B6Uu4LbgZM9/view?usp=sharing", caption: "Dokumentasi Komitmen Peningkatan Mutu Digitalisasi Kinerja" },
+                { url: "https://drive.google.com/file/d/1zDkK1lEcMn-GUGiqGmdHk1A9hi7yPEGX/view?usp=sharing", caption: "Dokumentasi Refleksi & Penutupan Bimtek Pukul 16.00 WIB" },
+                { url: "https://drive.google.com/file/d/1zG5JIooW99mw_6IRbwYogJiibIGb0N1j/view?usp=sharing", caption: "Dokumentasi Lengkap Bimtek Boskinerja Digitalisasi 2026 SMKN 1 Wonoasri" },
+                { url: "https://drive.google.com/file/d/1BvnGO7VHGF-zm7VoUWUht_uR6npSZ9U4/view?usp=sharing", caption: "Dokumentasi Pendampingan Pelaksanaan Boskinerja Digitalisasi SMKN 1 Wonoasri" },
+                { url: "https://drive.google.com/file/d/1ChFqAEZ0bhEgdvi03v0f9ZUSMJSmjYGn/view?usp=sharing", caption: "Dokumentasi Aktivitas Praktik Digitalisasi Kinerja Pendidik" },
+                { url: "https://drive.google.com/file/d/1DMLBlmNnJmR7Rrld_1mZ36PDL_LoJZKQ/view?usp=sharing", caption: "Dokumentasi Diskusi Teknis Pengelolaan Sistem Kinerja Sekolah" },
+                { url: "https://drive.google.com/file/d/1SjdNsX1IhpLQX1C-IqEoIqWkx-qkK_Ln/view?usp=sharing", caption: "Dokumentasi Pembimbingan Aplikasi Boskinerja Digitalisasi 2026" },
+                { url: "https://drive.google.com/file/d/1V6O6BV7ce6QL2f1ApaLRxZHwQR2LoTJR/view?usp=sharing", caption: "Dokumentasi Sesi Uji Coba Fitur Platform Digitalisasi Kinerja" },
+                { url: "https://drive.google.com/file/d/1_baiC6U2kIWN4ZUHq1bSyssZyBrYpuAl/view?usp=sharing", caption: "Dokumentasi Gelar Hasil Praktik Digitalisasi SMKN 1 Wonoasri" },
+                { url: "https://drive.google.com/file/d/1bMo5n1onkQ846jv0DQ2GN-vyVyvwkwIh/view?usp=sharing", caption: "Dokumentasi Tambahan Bimtek Boskinerja Digitalisasi 2026 SMKN 1 Wonoasri" }
+            ],
+            driveUrl: "https://drive.google.com/drive/folders/1m5mmzlcvIt_g9K6JW0wOJjB8_qMcGOm8"
+        },
+        "13": {
+            period: "Kamis, 3 September 2026",
+            title: "Bimtek Boskinerja Digitalisasi 2026",
+            institution: "SDN Sewulan 02",
+            badges: [
+                { text: "Boskinerja Digitalisasi", icon: "fas fa-laptop-code", color: "bg-sky-500/10 text-sky-400 border border-sky-500/20" },
+                { text: "SDN Sewulan 02", icon: "fas fa-school", color: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" },
+                { text: "50 Peserta Pendidik", icon: "fas fa-users", color: "bg-amber-500/10 text-amber-400 border border-amber-500/20" }
+            ],
+            overview: "Pelaksanaan Bimbingan Teknis (Bimtek) Boskinerja Digitalisasi 2026 yang bertempat di SDN Sewulan 02. Pelatihan ini berlangsung dari pukul 08.00 hingga 16.00 WIB untuk mendampingi 50 orang peserta pendidik dalam tata kelola digitalisasi kinerja sekolah.",
+            highlights: [
+                "<strong>Hari / Tanggal Pelaksanaan:</strong> Kamis, 3 September 2026",
+                "<strong>Waktu Pelaksanaan:</strong> Pukul 08.00 - 16.00 WIB",
+                "<strong>Tempat / Lokasi Kegiatan:</strong> SDN Sewulan 02",
+                "<strong>Jumlah Peserta:</strong> 50 Orang Pendidik & Tenaga Kependidikan",
+                "<strong>Materi Utama & Hasil Karya:</strong> Pendampingan teknis implementasi Boskinerja Digitalisasi 2026, tata kelola data kinerja, serta integrasi platform digital."
+            ],
+            photos: [
+                { url: "https://drive.google.com/file/d/12fyM9zLe5IGKPJTS8yEgyfsjtqhShZDD/view?usp=sharing", caption: "Dokumentasi Pembukaan Bimtek Konten Digital di SDN Sewulan 02 — 3 September 2026" },
+                { url: "https://drive.google.com/file/d/15jJzbLsMZiTcot4stSXFJ_rQyRtDKALZ/view?usp=sharing", caption: "Dokumentasi Sesi Pemaparan Materi Konten Digital & Numerasi" },
+                { url: "https://drive.google.com/file/d/18IpN7o8cmDgvQLbBksKFkvdRl8QwrI24/view?usp=sharing", caption: "Dokumentasi Kehadiran & Antusiasme 50 Peserta Pendidik SDN Sewulan 02" },
+                { url: "https://drive.google.com/file/d/1E_DzGgG0nRx9WzHtayFMyvf0VVpwRKmg/view?usp=sharing", caption: "Dokumentasi Sesi Praktik Pembuatan Media Pembelajaran Digital" },
+                { url: "https://drive.google.com/file/d/1HlZ36flV6YmKfBESxfs25GTRIp_vdahE/view?usp=sharing", caption: "Dokumentasi Pendampingan Teknis Perancangan Konten Interaktif" },
+                { url: "https://drive.google.com/file/d/1InpEnLPUTsluYTgeFrnAx0zXbSNUHKxr/view?usp=sharing", caption: "Dokumentasi Suasana Pelatihan Pendidik di Ruang SDN Sewulan 02" },
+                { url: "https://drive.google.com/file/d/1K2gKSAyfsGRovU_U4aYW2n16iv4Q6qo0/view?usp=sharing", caption: "Dokumentasi Diskusi Kelompok Penyusunan Konten Pembelajaran Digital" },
+                { url: "https://drive.google.com/file/d/1KDYCSzmjDWldQD1YWmn1M8VFUXIF3sop/view?usp=sharing", caption: "Dokumentasi Demonstrasi Fitur Media Pembelajaran Digital Sekolah" },
+                { url: "https://drive.google.com/file/d/1Ml3Zck9tkrT19WmyNICD00YSowQY3CgZ/view?usp=sharing", caption: "Dokumentasi Konsultasi Teknis & Bimbingan Praktis Peserta Bimtek" },
+                { url: "https://drive.google.com/file/d/1QyPp8610jzd2tapJyG_O0yAe01VOJ-BM/view?usp=sharing", caption: "Dokumentasi Presentasi Karya Konten Digital Hasil Pelatihan" },
+                { url: "https://drive.google.com/file/d/1SPJDs4LUYCWzTTmGcqCpzWn-1yZRvA7h/view?usp=sharing", caption: "Dokumentasi Review & Evaluasi Karya Media Digital Guru" },
+                { url: "https://drive.google.com/file/d/1_-MFIYMK4somDq2NVyd84QZ2jlQDP4u2/view?usp=sharing", caption: "Dokumentasi Pembukaan Sesi Pelatihan Pukul 08.00 WIB" },
+                { url: "https://drive.google.com/file/d/1e3g-rPf09s_ppD3xaPS1LKY5YhN4bBmZ/view?usp=sharing", caption: "Dokumentasi Pembimbingan Integrasi Animasi & Audio Visual" },
+                { url: "https://drive.google.com/file/d/1fMUZ_QxsK8d2ZOnlU31w8irO8pk9zE1K/view?usp=sharing", caption: "Dokumentasi Simulasi Penggunaan Konten Digital di Sekolah" },
+                { url: "https://drive.google.com/file/d/1gD3BfE7SH9QzZDltiE19XzaXwzlVKs-v/view?usp=sharing", caption: "Dokumentasi Foto Bersama 50 Peserta Bimtek SDN Sewulan 02" },
+                { url: "https://drive.google.com/file/d/1hT0T2CZr_GVm2qG3lhWIoLaJPVf1l6YK/view?usp=sharing", caption: "Dokumentasi Sesi Tanya Jawab & Solusi Digitalisasi Sekolah" },
+                { url: "https://drive.google.com/file/d/1jbAX0K7B_13Y2fuxO77rlGr003aU7QSR/view?usp=sharing", caption: "Dokumentasi Eksplorasi Aplikasi & Tools Pembuatan Media Ajar" },
+                { url: "https://drive.google.com/file/d/1lJnmF9o2CjmfdaDlQR-dbkxp-W9gBezd/view?usp=sharing", caption: "Dokumentasi Aksi Praktik Baik Digitalisasi Pendidikan SDN Sewulan 02" },
+                { url: "https://drive.google.com/file/d/1r0xw5zQG4RY6H1x5N-W8YyvLSGVznq3r/view?usp=sharing", caption: "Dokumentasi Pendampingan Desain Visual Konten Pembelajaran" },
+                { url: "https://drive.google.com/file/d/1t-BGHzWCJhQZZ7xWWl86tWFwCNbaYTAB/view?usp=sharing", caption: "Dokumentasi Komitmen Peningkatan Mutu Pendidik SDN Sewulan 02" },
+                { url: "https://drive.google.com/file/d/1uMk7PEFQsZBj8zy6_db7mSe1nFjUzv-F/view?usp=sharing", caption: "Dokumentasi Pengarahan Sesi Sore Pelatihan Media Digital" },
+                { url: "https://drive.google.com/file/d/1uSIdwR6Abhz-wEQQ0EG2LgYNnK-rw-5g/view?usp=sharing", caption: "Dokumentasi Gelar Hasil Karya Modul Ajar Digital Peserta" },
+                { url: "https://drive.google.com/file/d/1v62vtr5PQlkMQgCaVUoz0IGCDGvV-a1X/view?usp=sharing", caption: "Dokumentasi Kolaborasi Pendidik & Instruktur Pelatihan" },
+                { url: "https://drive.google.com/file/d/1xO34fpem6SRefHbb7BKm9N57OWIWH8-3/view?usp=sharing", caption: "Dokumentasi Sesi Refleksi & Pembagian Sertifikat Pelatihan" },
+                { url: "https://drive.google.com/file/d/1y6udV0uSaCnQNjJWcPf_-fAjGCrwErZQ/view?usp=sharing", caption: "Dokumentasi Penutupan Bimtek Konten Digital Pukul 16.00 WIB" },
+                { url: "https://drive.google.com/file/d/1yXuP_E0EZdi006VkuqH-bAqCc94A0wIh/view?usp=sharing", caption: "Dokumentasi Lengkap Pelatihan Konten Digital SDN Sewulan 02" }
+            ],
+            driveUrl: "https://drive.google.com/drive/folders/1Awet3vKyDrBvtagvjxBh_Ard4NQnubOH"
+        },
         "12": {
             period: "Rabu & Kamis, 26 & 27 Agustus 2026",
             title: "Bimtek Konten Digital \"Literasi Kesehatan Dan Numerasi\"",
